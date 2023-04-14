@@ -1,6 +1,6 @@
 
 
-# Helper function
+# Helper function to drive Verilog model and compare test cases
 def t( dut, 
        cs,    sclk,    mosi,    miso, \
        cs_2,  sclk_2,  mosi_2,  miso_2, \
@@ -45,6 +45,7 @@ def t( dut,
   # Tick simulator one cycle
   dut.sim_tick()
 
+#Helper funciton which appends values to our SPI vector array. Helps for readability.
 def bitwise_input_array_helper(output_arr, cs, sclk, mosi ,miso):
   output_arr[0].append(cs)
   output_arr[1].append(sclk)
@@ -53,8 +54,9 @@ def bitwise_input_array_helper(output_arr, cs, sclk, mosi ,miso):
 
   return output_arr
 
+#Secret sauce that generates a test vector which allows you to just iterate through the array and pass values to t()
 # [[cs],[sclk],[mosi].[miso]]
-def generate_minion_bitwise_test_from_input_array(dut, val_write, val_read, into_SPI_array, outof_spi_array, PACKET_SIZE):
+def generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE):
   output_arr = [[],[],[],[]]
 
   #Hold cs to 1 so the SPI minion is reset to the base state.
@@ -65,6 +67,112 @@ def generate_minion_bitwise_test_from_input_array(dut, val_write, val_read, into
   bitwise_input_array_helper(output_arr, 1, 0,   0,    0)
   bitwise_input_array_helper(output_arr, 1, 0,   0,    0)
   bitwise_input_array_helper(output_arr, 1, 0,   0,    0)
+
+
+  #Sending the val_write and val_read bits over
+
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 ) # pull_en = 1
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 0, 0,   val_write,    0 )
+  bitwise_input_array_helper(output_arr, 0, 0,   val_write,    0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 ) # pull_en = 1
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 0, 0,   val_read,     0 )
+  bitwise_input_array_helper(output_arr, 0, 0,   val_read,     0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     0 )
+  bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+
+  #User defined payload
+  for i in range(PACKET_SIZE):
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 ) # pull_en = 1
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 0,   src_msg[i],   0 )
+    bitwise_input_array_helper(output_arr, 0, 0,   src_msg[i],   0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[i],   0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[i],   0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[i],   0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[i],   0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[i],   0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+
+  
+  #pull CS high to end transaction
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 ) # pull_en = 1
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
+
+  #if you are expecting data back... 
+  if val_read == 1:
+    #Manually send that we are not reading or writing in the next cycles. 
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 ) # pull_en = 1
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 ) # pull_en = 1
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+
+    #Confirm that what you get back is correct
+    for i in range(PACKET_SIZE):
+      bitwise_input_array_helper(output_arr, 0, 0,   0,          snk_msg[i]) # pull_en = 1
+      bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
+      bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
+      bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
+      bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
+      bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
+      bitwise_input_array_helper(output_arr, 0, 1,   0,         '?'        )
+      bitwise_input_array_helper(output_arr, 0, 1,   0,         '?'        )
+      bitwise_input_array_helper(output_arr, 0, 1,   0,         '?'        )
+      bitwise_input_array_helper(output_arr, 0, 1,   0,         '?'        )
+      bitwise_input_array_helper(output_arr, 0, 1,   0,         '?'        )
+      bitwise_input_array_helper(output_arr, 0, 1,   0,         '?'        )
+
+
+
+
+
 
 def test_random( cmdline_opts ):
 
