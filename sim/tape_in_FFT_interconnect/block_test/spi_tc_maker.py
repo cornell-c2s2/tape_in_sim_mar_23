@@ -54,6 +54,7 @@ def bitwise_input_array_helper(output_arr, cs, sclk, mosi ,miso):
 
   return output_arr
 
+
 #Secret sauce that generates a test vector which allows you to just iterate through the array and pass values to t()
 # [[cs],[sclk],[mosi].[miso]]
 def generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE):
@@ -168,192 +169,22 @@ def generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, 
       bitwise_input_array_helper(output_arr, 0, 1,   0,         '?'        )
       bitwise_input_array_helper(output_arr, 0, 1,   0,         '?'        )
       bitwise_input_array_helper(output_arr, 0, 1,   0,         '?'        )
-
-
-
-
-
-
-def test_random( cmdline_opts ):
-
-
-  dut = FFTInterconnectVRTL()
-  dut = config_model_with_cmdline_opts( dut, cmdline_opts, duts=[] )
-  dut.apply( DefaultPassGroup( linetrace=True ) )
-
-  dut.sim_reset()
   
-  array = random_signal(32, 8, 16)
-
-#         cs    sclk mosi miso cs_2  sclk_2  mosi_2 miso_2  
-  t( dut, 1,    0,   0,   0,   0,    0,      0,     0      ) # cs high
-  t( dut, 1,    0,   0,   0,   0,    0,      0,     0      )
-  t( dut, 1,    0,   0,   0,   0,    0,      0,     0      )
-  t( dut, 1,    0,   0,   0,   0,    0,      0,     0      )
-  t( dut, 1,    0,   0,   0,   0,    0,      0,     0      ) # period before sclk toggle
-
-  for j in range(8):
-    t( dut, 0,    0,   0,   0,   1,    0,      0,     0    ) # pull_en = 1
-    t( dut, 0,    0,   0,   0,   1,    0,      0,     0    )
-    t( dut, 0,    0,   0,   0,   1,    0,      0,     0    )
-    t( dut, 0,    0,   0,   0,   1,    0,      0,     0    )
-    t( dut, 0,    0,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    0,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   0,   0,   1,    0,      0,     0    )
-    t( dut, 0,    0,   0,   0,   1,    0,      0,     0    ) # pull_en = 1
-    t( dut, 0,    0,   0,   0,   1,    0,      0,     0    )
-    t( dut, 0,    0,   0,   0,   1,    0,      0,     0    )
-    t( dut, 0,    0,   0,   0,   1,    0,      0,     0    )
-    t( dut, 0,    0,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    0,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   1,   0,   1,    0,      0,     0    )
-    t( dut, 0,    1,   0,   0,   1,    0,      0,     0    )
-
-    print(array[0])
-    for i in range(32):
-      # 0
-      t( dut, 0,    0,   0,   0,   1,    0,      0,     0    ) # pull_en = 1
-      t( dut, 0,    0,   0,   0,   1,    0,      0,     0    )
-      t( dut, 0,    0,   0,   0,   1,    0,      0,     0    )
-      t( dut, 0,    0,   0,   0,   1,    0,      0,     0    )
-      t( dut, 0,    0,   array[0][j * 32 + 31- i],   0,   1,    0,      0,     0    )
-      t( dut, 0,    0,   array[0][j * 32 + 31- i],   0,   1,    0,      0,     0    )
-      t( dut, 0,    1,   array[0][j * 32 + 31- i],   0,   1,    0,      0,     0    )
-      t( dut, 0,    1,   array[0][j * 32 + 31- i],   0,   1,    0,      0,     0    )
-      t( dut, 0,    1,   array[0][j * 32 + 31- i],   0,   1,    0,      0,     0    )
-      t( dut, 0,    1,   array[0][j * 32 + 31- i],   0,   1,    0,      0,     0    )
-      t( dut, 0,    1,   array[0][j * 32 + 31- i],   0,   1,    0,      0,     0    )
-      t( dut, 0,    1,   0,   0,   1,    0,      0,     0    )
-
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    ) # pull_en = 1
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    ) # pull_en = 1
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   1,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   1,    0,      0,     '?'    )
-    
-    
+  return output_arr
 
 
-  for i in range(114):
-    # wait for FFT to finish
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
+def run_test_vector_on_dut(dut, spi_select, val_write, val_read, src_msg, snk_msg, PACKET_SIZE):
 
-  for j in range(8):
-    
-  #         cs    sclk mosi miso cs_2  sclk_2  mosi_2 miso_2
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    ) # pull_en = 1
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    ) # pull_en = 1
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      1,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      1,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      1,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      1,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      1,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      1,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      1,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      1,     '?'    )
+  spi_array = generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE)
 
-    for i in range(32):
-        # 0
-        t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    ) # pull_en = 1
-        t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-        t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-        t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-        t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-        t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-        t( dut, 1,    0,   0,   0,   0,    1,      0,     '?'    )
-        t( dut, 1,    0,   0,   0,   0,    1,      0,     '?'    )
-        t( dut, 1,    0,   0,   0,   0,    1,      0,     '?'    )
-        t( dut, 1,    0,   0,   0,   0,    1,      0,     '?'    )
-        t( dut, 1,    0,   0,   0,   0,    1,      0,     '?'    )
-        t( dut, 1,    0,   0,   0,   0,    1,      0,     '?'    )
-    
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   1,    0,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   1,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   1,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   1,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   1,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   1,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    0,   0,   0,   0,    0,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    t( dut, 1,    1,   0,   0,   0,    1,      0,     '?'    )
-    
-    print(array)
-    print(array[1][j * 32 + 31- 0])
-    for i in range(32):
-
-    #         cs    sclk mosi miso cs_2  sclk_2  mosi_2 miso_2
-      t( dut, 1,    0,   0,   0,   0,    0,      0,     array[1][j * 32 + 31- i]    ) # pull_en = 1
-      t( dut, 1,    0,   0,   0,   0,    0,      0,     '?')
-      t( dut, 1,    0,   0,   0,   0,    0,      0,     '?')
-      t( dut, 1,    0,   0,   0,   0,    0,      0,     '?')
-      t( dut, 1,    0,   0,   0,   0,    0,      0,     '?')
-      t( dut, 1,    0,   0,   0,   0,    0,      0,     '?')
-      t( dut, 1,    0,   0,   0,   0,    1,      0,     '?')
-      t( dut, 1,    0,   0,   0,   0,    1,      0,     '?')
-      t( dut, 1,    0,   0,   0,   0,    1,      0,     '?')
-      t( dut, 1,    0,   0,   0,   0,    1,      0,     '?')
-      t( dut, 1,    0,   0,   0,   0,    1,      0,     '?')
-      t( dut, 1,    0,   0,   0,   0,    1,      0,     '?')
+  if(spi_select = 0):
+    for i in range(len(spi_array[0])):
+      t( dut, spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], 0, 0, 0, '?', 0, 0, 0, '?', '?', '?', '?', 0)
+  elif(spi_select = 1):
+    for i in range(len(spi_array[0])):
+      t( dut, 0, 0, 0, '?', spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], 0, 0, 0, '?', '?', '?', '?', 0)
+  elif(spi_select = 2):
+    for i in range(len(spi_array[0])):
+      t( dut, 0, 0, 0, '?', 0, 0, 0, '?', spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], '?', '?', '?', 0)
+  elif(spi_select = 3):
+    pass
