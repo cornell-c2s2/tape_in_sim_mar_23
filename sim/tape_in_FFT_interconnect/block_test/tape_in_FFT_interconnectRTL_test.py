@@ -28,7 +28,7 @@ random.seed(0xdeadbeef)
 # Test Case: basic
 #-------------------------------------------------------------------------
 
-def test_random_stream( cmdline_opts ):
+def test_loopback( cmdline_opts ):
 
 
   dut = FFTInterconnectVRTL()
@@ -36,6 +36,6 @@ def test_random_stream( cmdline_opts ):
   dut.apply( DefaultPassGroup( linetrace=True ) )
 
   dut.sim_reset()
+  loopback(dut)
   
-  
-  loopback()
+

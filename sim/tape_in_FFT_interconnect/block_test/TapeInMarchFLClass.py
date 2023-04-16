@@ -16,15 +16,15 @@ class TapeInMarchFL:
     
 
     ADDRESS_MAPPING = {
-        'Loopback':                  Bits32(0),
-        'FFT_input_XBar':            Bits32(1),
-        'FFT_output_XBar':           Bits32(2),
-        'SPI_master_frequency_sel':  Bits32(3),
-        'SPI_master_chip_sel':       Bits32(4),
-        'SPI_packet_size_sel':       Bits32(5),
-        'SPI_master_xbar_sel':       Bits32(6),
-        'FFT_input_crossbar_inj':    Bits32(7), 
-        'SPI_master_xbar_inj':       Bits32(8)
+        'Loopback':                  Bits4(0),
+        'FFT_input_XBar':            Bits4(1),
+        'FFT_output_XBar':           Bits4(2),
+        'SPI_master_frequency_sel':  Bits4(3),
+        'SPI_master_chip_sel':       Bits4(4),
+        'SPI_packet_size_sel':       Bits4(5),
+        'SPI_master_xbar_sel':       Bits4(6),
+        'FFT_input_crossbar_inj':    Bits4(7), 
+        'SPI_master_xbar_inj':       Bits4(8)
     }
 
     BIT_WIDTH    = 32
@@ -45,6 +45,7 @@ class TapeInMarchFL:
         self.SPI_master_chip_select     = Bits32(0)
         self.SPI_master_pkt_size_select = Bits32(0)
         self.SPI_master_Xbar_state      = Bits32(0)
+        self.FREQ                       = 0
 
         self.deserializer_buffer        = []
         

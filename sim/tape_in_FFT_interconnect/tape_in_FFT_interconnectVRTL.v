@@ -5,6 +5,7 @@
 `include "../../../spi_minion/sim/SPI_minion/components/SPIMinionAdapterConnectedVRTL.v"
 `include "../../../tape_in_sim/sim/minion_FFT/FFTSPIMinionVRTL.v"
 `include "../../../C2S2-PacketRoutingInterconnect/sim/BlockingXBar/crossbarVRTL.v"
+`include "../../../C2S2-PacketRoutingInterconnect/sim/BlockingXBar/crossbaroneoutVRTL.v"
 `include "../../../C2S2-PacketRoutingInterconnect/sim/Router/routerVRTL.v"
 `include "../../../C2S2-PacketRoutingInterconnect/sim/Arbiter/ArbitratorVRTL.v"
 
@@ -69,7 +70,7 @@ logic                   spi_master_send_rdy;
 logic [BIT_WIDTH - 1:0] spi_master_send_msg;
 
 logic                   spi_master_recv_val;
-logic                   spi_master_recv_rdy[0:0];
+logic                   spi_master_recv_rdy;
 logic [BIT_WIDTH - 1:0] spi_master_recv_msg;
 
 logic [BIT_WIDTH - 1:0] fft_input_xbar_recv_msg[0:1];
@@ -80,7 +81,6 @@ logic [BIT_WIDTH - 1:0] fft_input_xbar_send_msg[0:1];
 logic fft_input_xbar_send_val[0:1];
 logic fft_input_xbar_send_rdy[0:1];
 
-logic intermediate_msg[0:0];
 
 logic [BIT_WIDTH - 1:0] fft_output_xbar_recv_msg[0:1];
 logic fft_output_xbar_recv_val[0:1];
@@ -100,6 +100,11 @@ logic [BIT_WIDTH - 1:0]  send_msg_d   [N_SAMPLES - 1:0];
 logic                    send_rdy_d;
 logic                    send_val_d;
 
+logic                    master_cs_temp [0:1];
+
+logic [BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2 - 1 : 0 ] arb_imm;
+
+
 SPIMinionAdapterConnectedVRTL #(.BIT_WIDTH(BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2), .N_SAMPLES(N_SAMPLES) ) ctrl_spi_minion 
                 (.clk(clk), .reset(reset), .cs(minion_cs), .sclk(minion_sclk), .mosi(minion_mosi), .miso(minion_miso),
                  .recv_msg(spi_minion_recv_msg), .recv_rdy(spi_minion_recv_rdy), .recv_val(spi_minion_recv_val), 
@@ -116,9 +121,9 @@ ArbitratorVRTL #(.nbits(BIT_WIDTH),
              .recv_rdy(module_interconnect_snk_rdy), 
              .recv_msg(module_interconnect_snk_msg), 
 
-             .send_val(spi_minion_recv_msg), 
+             .send_val(spi_minion_recv_val), 
              .send_rdy(spi_minion_recv_rdy), 
-             .send_msg(spi_minion_recv_val));
+             .send_msg(spi_minion_recv_msg));
 
 routerVRTL #(.p_nbits(BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2), .p_noutputs(MAX_ADDRESSABLE_SRCS_POW_2)) router
             (
@@ -139,7 +144,7 @@ assign module_interconnect_snk_msg[0] = module_interconnect_src_msg[0];
 
 
 //Address 1: FFT Input Crossbar Control
-crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(2), .CONTROL_BIT_WIDTH(BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2)) fft_input_xbar  (.clk(clk), 
+crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(2), .CONTROL_BIT_WIDTH(BIT_WIDTH)) fft_input_xbar  (.clk(clk), 
                                                                                     .reset(reset), 
                                                                                     
                                                                                     .recv_msg(fft_input_xbar_recv_msg), 
@@ -168,10 +173,8 @@ assign spi_master_send_val        = fft_input_xbar_recv_rdy[1];
 
 
 
-assign module_interconnect_snk_rdy[1] = intermediate_msg[0];
-
 //Address 2: FFT Output Crossbar Control
-crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(1), .CONTROL_BIT_WIDTH(BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2)) fft_output_xbar (.clk(clk), 
+crossbaroneoutVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(1), .CONTROL_BIT_WIDTH(BIT_WIDTH)) fft_output_xbar (.clk(clk), 
                                                                                     .reset(reset), 
                                                                                     
                                                                                     .recv_msg(fft_output_xbar_recv_msg), 
@@ -180,7 +183,7 @@ crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(1), .CONTROL_BIT_
                                                                                     
                                                                                     .send_msg(module_interconnect_snk_msg[1]), 
                                                                                     .send_val(module_interconnect_snk_val[1]), 
-                                                                                    .send_rdy(module_interconnect_snk_rdy[1:1]), 
+                                                                                    .send_rdy(module_interconnect_snk_rdy[1]), 
                                                                                     
                                                                                     .control    (module_interconnect_src_msg[2]), 
                                                                                     .control_val(module_interconnect_src_val[2]), 
@@ -189,7 +192,7 @@ crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(1), .CONTROL_BIT_
 
 
 //Address 6: SPI Master Crossbar 
-crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(1), .CONTROL_BIT_WIDTH(BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2)) spi_master_xbar (.clk(clk), 
+crossbaroneoutVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(1), .CONTROL_BIT_WIDTH(BIT_WIDTH)) spi_master_xbar (.clk(clk), 
                                                                                     .reset(reset), 
                                                                                     
                                                                                     .recv_msg(spi_master_xbar_recv_msg), 
@@ -198,7 +201,7 @@ crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(1), .CONTROL_BIT_
                                                                                     
                                                                                     .send_msg(spi_master_recv_msg), 
                                                                                     .send_val(spi_master_recv_val), 
-                                                                                    .send_rdy(spi_master_recv_rdy[0:0]), 
+                                                                                    .send_rdy(spi_master_recv_rdy), 
                                                                                     
                                                                                     .control    (module_interconnect_src_msg[6]), 
                                                                                     .control_val(module_interconnect_src_val[6]), 
@@ -213,13 +216,13 @@ assign module_interconnect_src_rdy[8]  = spi_master_xbar_recv_rdy[0];
 assign spi_master_xbar_recv_msg[1] = 0;
 assign spi_master_xbar_recv_val[1] = 1;
 
+assign master_cs = master_cs_temp[0];
 
-
-SPIMasterValRdyVRTL #(.nbits(32), .ncs(1)) spi_master (
+SPIMasterValRdyVRTL #(.nbits(32), .ncs(2)) spi_master (
   .clk(clk), 
   .reset(reset), 
   
-  .spi_ifc_cs  (master_cs  ), 
+  .spi_ifc_cs  (master_cs_temp), 
   .spi_ifc_miso(master_miso),
   .spi_ifc_mosi(master_mosi),
   .spi_ifc_sclk(master_sclk),

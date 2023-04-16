@@ -1,4 +1,4 @@
-
+from pymtl3 import *
 
 # Helper function to drive Verilog model and compare test cases
 def t( dut, 
@@ -21,14 +21,11 @@ def t( dut,
   dut.spi_min.sclk_2  @= sclk_3
   dut.spi_min.mosi_2  @= mosi_3
 
-  dut.spi_min.ms_cs @= ms_cs
-  dut.spi_min.ms_sclk @= ms_sclk
-  dut.spi_min.ms_mosi @= ms_mosi
   dut.spi_min.ms_miso @= ms_miso
 
 
   if miso != '?':
-    assert dut.spi_min.miso == miso
+    assert dut.spi_min.miso == miso, "ERROR: expected value incorrect. Expected: " + str(miso) + " Recieved: " + str(dut.spi_min.miso)
 
 
   if miso_2 != '?':
@@ -37,6 +34,11 @@ def t( dut,
   if miso_3 != '?':
     assert dut.spi_min.miso_3 == miso_3
 
+  if ms_cs != '?':
+    assert dut.spi_min.ms_cs == ms_cs
+  
+  if ms_sclk != '?':
+    assert dut.spi_min.ms_sclk == ms_sclk
 
   if ms_mosi != '?':
     assert dut.spi_min.ms_mosi == ms_mosi
@@ -72,92 +74,103 @@ def generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, 
 
   #Sending the val_write and val_read bits over
 
-  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 ) # pull_en = 1
-  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 0, 0,   val_write,    0 )
-  bitwise_input_array_helper(output_arr, 0, 0,   val_write,    0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
-  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 ) # pull_en = 1
-  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 0, 0,   val_read,     0 )
-  bitwise_input_array_helper(output_arr, 0, 0,   val_read,     0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     0 )
-  bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' ) # pull_en = 1
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 0, 0,   val_write,    '?' )
+  bitwise_input_array_helper(output_arr, 0, 0,   val_write,    '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_write,    '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' ) # pull_en = 1
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 0, 0,   val_read,     '?' )
+  bitwise_input_array_helper(output_arr, 0, 0,   val_read,     '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   val_read,     '?' )
+  bitwise_input_array_helper(output_arr, 0, 1,   0,            '?' )
 
   #User defined payload
   for i in range(PACKET_SIZE):
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 ) # pull_en = 1
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 0,   src_msg[i],   0 )
-    bitwise_input_array_helper(output_arr, 0, 0,   src_msg[i],   0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[i],   0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[i],   0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[i],   0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[i],   0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[i],   0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' ) # pull_en = 1
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   src_msg[35 - i],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   src_msg[35 - i],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[35 - i],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[35 - i],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[35 - i],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[35 - i],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[35 - i],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,            '?' )
 
   
   #pull CS high to end transaction
-  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 ) # pull_en = 1
-  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 1, 0,   0,            0 )
-  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
-  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
-  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
-  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
-  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
-  bitwise_input_array_helper(output_arr, 1, 1,   0,            0 )
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            '?' ) # pull_en = 1
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 1, 0,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            '?' )
+  bitwise_input_array_helper(output_arr, 1, 1,   0,            '?' )
 
   #if you are expecting data back... 
   if val_read == 1:
     #Manually send that we are not reading or writing in the next cycles. 
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 ) # pull_en = 1
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            1 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 ) # pull_en = 1
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 0,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
-    bitwise_input_array_helper(output_arr, 0, 1,   0,            0 )
-
+    bitwise_input_array_helper(output_arr, 1, 0,   0,          '?' ) # pull_en = 1
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          1 ) # pull_en = 1
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          1 ) # pull_en = 1
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
     #Confirm that what you get back is correct
     for i in range(PACKET_SIZE):
-      bitwise_input_array_helper(output_arr, 0, 0,   0,          snk_msg[i]) # pull_en = 1
+      bitwise_input_array_helper(output_arr, 0, 0,   0,          snk_msg[35 - i]) # pull_en = 1
       bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
       bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
       bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
@@ -208,13 +221,13 @@ def run_test_vector_on_dut(dut, spi_select, val_write, val_read, src_msg, snk_ms
 
   if(spi_select == 0):
     for i in range(len(spi_array[0])):
-      t( dut, spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], 0, 0, 0, '?', 0, 0, 0, '?', '?', '?', '?', 0)
+      t( dut, spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', '?', '?', '?', Bits1(0))
   elif(spi_select == 1):
     for i in range(len(spi_array[0])):
-      t( dut, 0, 0, 0, '?', spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], 0, 0, 0, '?', '?', '?', '?', 0)
+      t( dut, Bits1(0), Bits1(0), Bits1(0), '?', spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], Bits1(0), Bits1(0), Bits1(0), '?', '?', '?', '?', Bits1(0))
   elif(spi_select == 2):
     for i in range(len(spi_array[0])):
-      t( dut, 0, 0, 0, '?', 0, 0, 0, '?', spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], '?', '?', '?', 0)
-  elif(spi_select = 3):
+      t( dut, Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], '?', '?', '?', Bits1(0))
+  elif(spi_select == 3):
     for i in range(len(spi_array[0])):
-      t( dut, 0, 0, 0, '?', 0, 0, 0, '?', 0, 0, 0, '?', spi_ms_array[0][i], spi_ms_array[1][i], spi_ms_array[2][i], spi_ms_array[3][i])
+      t( dut, Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', spi_ms_array[0][i], spi_ms_array[1][i], spi_ms_array[2][i], spi_ms_array[3][i])

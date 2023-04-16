@@ -31,7 +31,7 @@ from pymtl3 import *
 # input = 1 → SPI master
 # output = 0 → FFT
 # output = 1 → bypass FFT
-def FFT_Input_Crossbar_Control(message):
+def FFT_Loopback(message):
     msg = concat(Bits4(0), message)
     return Bits36(msg)
 
@@ -122,5 +122,6 @@ def FFT_Input_Crossbar_Injection(input):
 def SPI_Master_Crossbar_Injection(input):
     msg = concat(Bits4(8), input)
     return Bits36(msg)
+
 
 

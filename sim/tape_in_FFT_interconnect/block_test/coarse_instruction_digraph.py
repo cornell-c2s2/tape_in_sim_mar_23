@@ -9,10 +9,10 @@ from .command_generator import *
 
 fl_model = TapeInMarchFL()
 
-def loopback(dut, value = 0xdeadbeef):
-    in_msg = FFT_Input_Crossbar_Control(value)
+def loopback(dut, value = Bits32(0xdeadbeef)):
+    in_msg = FFT_Loopback(value)
     out_msg = fl_model.SPI_minion_input(in_msg)
-    run_test_vector_on_dut(0, 0x1, 0x1, in_msg, out_msg, TapeInMarchFL.PACKET_SIZE)
+    run_test_vector_on_dut(dut, 0x0, 0x1, 0x1, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
 
 def fft_injection_minion(dut):
     pass
