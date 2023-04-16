@@ -173,7 +173,7 @@ def generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, 
   return output_arr
 
 
-def generate_master_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE):
+def generate_master_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE, FREQ):
   output_arr = [[],[],[],[]]
 
   #perspective of the microphone
