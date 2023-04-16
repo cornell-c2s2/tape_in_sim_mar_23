@@ -18,8 +18,8 @@ from os import path
 from pymtl3 import *
 from pymtl3.stdlib import stream
 from pymtl3.passes.backends.verilog import *
-from SPIIfc import SPIMinionWrapperIfc
-from SPIIfc import SPIMasterWrapperIfc
+from .SPIIfc import SPIMinionWrapperIfc
+
 # from pymtl3.stdlib.stream.ifcs import RecvIfcRTL, SendIfcRTL
 
 class tape_in_FFT_interconnectVRTL( VerilogPlaceholder, Component ):
@@ -31,7 +31,10 @@ class tape_in_FFT_interconnectVRTL( VerilogPlaceholder, Component ):
     s.set_metadata( VerilogTranslationPass.explicit_module_name, f'FFTSPIMinionRTL' )
 
     s.spi_min = SPIMinionWrapperIfc()
-    s.spi_mas = SPIMinionWrapperIfc()
+
+    s.minion_parity  = OutPort() 
+    s.adapter_parity = OutPort()
+
     # s.recv = RecvIfcRTL(Bits32)
     # s.send = SendIfcRTL(Bits16)
 
@@ -48,10 +51,10 @@ class tape_in_FFT_interconnectVRTL( VerilogPlaceholder, Component ):
         s.spi_min.sclk_3    : 'minion_sclk_3',
         s.spi_min.mosi_3    : 'minion_mosi_3',
         s.spi_min.miso_3    : 'minion_miso_3',
-        s.spi_mas.ms_cs     : 'master_cs',
-        s.spi_mas.ms_sclk   : 'master_sclk',
-        s.spi_mas.ms_mosi   : 'master_mosi',
-        s.spi_mas.ms_miso   : 'master_miso',
+        s.spi_min.ms_cs     : 'master_cs',
+        s.spi_min.ms_sclk   : 'master_sclk',
+        s.spi_min.ms_mosi   : 'master_mosi',
+        s.spi_min.ms_miso   : 'master_miso',
         
         # s.recv.msg         : 'recv_msg',
         # s.recv.rdy         : 'recv_rdy',
