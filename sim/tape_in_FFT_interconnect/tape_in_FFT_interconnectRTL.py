@@ -26,9 +26,9 @@ class tape_in_FFT_interconnectVRTL( VerilogPlaceholder, Component ):
 
   # Constructor
 
-  def construct( s ):
+  def construct( s, BIT_WIDTH = 32, DECIMAL_PT = 16, N_SAMPLES = 256 ):
 
-    s.set_metadata( VerilogTranslationPass.explicit_module_name, f'FFTSPIMinionRTL' )
+    s.set_metadata( VerilogTranslationPass.explicit_module_name, f'FFTSPIInterconnectRTL' )
 
     s.spi_min = SPIMinionWrapperIfc()
 

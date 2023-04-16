@@ -1,5 +1,5 @@
-`ifndef TAPE_IN_FFT_VRTL
-`define TAPE_IN_FFT_VRTL
+`ifndef TAPE_IN_FFT_INTERCONNECT_VRTL
+`define TAPE_IN_FFT_INTERCONNECT_VRTL
 
 `include "../../../C2S2-Module-Library/sim/spi/SPIMasterValRdyVRTL.v"
 `include "../../../spi_minion/sim/SPI_minion/components/SPIMinionAdapterConnectedVRTL.v"
@@ -64,7 +64,41 @@ logic                   module_interconnect_snk_val[0:MAX_ADDRESSABLE_SRCS_POW_2
 logic                   module_interconnect_snk_rdy[0:MAX_ADDRESSABLE_SRCS_POW_2 - 1];
 logic [BIT_WIDTH - 1:0] module_interconnect_snk_msg[0:MAX_ADDRESSABLE_SRCS_POW_2 - 1];
 
+logic                   spi_master_send_val;
+logic                   spi_master_send_rdy;
+logic [BIT_WIDTH - 1:0] spi_master_send_msg;
 
+logic                   spi_master_recv_val;
+logic                   spi_master_recv_rdy[0:0];
+logic [BIT_WIDTH - 1:0] spi_master_recv_msg;
+
+logic [BIT_WIDTH - 1:0] fft_input_xbar_recv_msg[0:1];
+logic fft_input_xbar_recv_val[0:1];
+logic fft_input_xbar_recv_rdy[0:1];
+
+logic [BIT_WIDTH - 1:0] fft_input_xbar_send_msg[0:1];
+logic fft_input_xbar_send_val[0:1];
+logic fft_input_xbar_send_rdy[0:1];
+
+logic intermediate_msg[0:0];
+
+logic [BIT_WIDTH - 1:0] fft_output_xbar_recv_msg[0:1];
+logic fft_output_xbar_recv_val[0:1];
+logic fft_output_xbar_recv_rdy[0:1];
+
+logic [BIT_WIDTH - 1:0] spi_master_xbar_recv_msg[0:1];
+logic spi_master_xbar_recv_val[0:1];
+logic spi_master_xbar_recv_rdy[0:1];
+
+logic [BIT_WIDTH - 1:0]  recv_msg_s   [N_SAMPLES - 1:0];
+logic                    recv_rdy_s;
+logic                    recv_val_s;
+
+
+
+logic [BIT_WIDTH - 1:0]  send_msg_d   [N_SAMPLES - 1:0];
+logic                    send_rdy_d;
+logic                    send_val_d;
 
 SPIMinionAdapterConnectedVRTL #(.BIT_WIDTH(BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2), .N_SAMPLES(N_SAMPLES) ) ctrl_spi_minion 
                 (.clk(clk), .reset(reset), .cs(minion_cs), .sclk(minion_sclk), .mosi(minion_mosi), .miso(minion_miso),
@@ -102,10 +136,6 @@ assign module_interconnect_snk_val[0] = module_interconnect_src_val[0];
 assign module_interconnect_src_rdy[0] = module_interconnect_snk_rdy[0];
 assign module_interconnect_snk_msg[0] = module_interconnect_src_msg[0];
 
-logic [BIT_WIDTH - 1:0] fft_input_xbar_recv_msg[0:1];
-logic fft_input_xbar_recv_val[0:1];
-logic fft_input_xbar_recv_rdy[0:1];
-
 
 
 //Address 1: FFT Input Crossbar Control
@@ -134,12 +164,10 @@ assign fft_input_xbar_recv_msg[1] = spi_master_send_msg;
 assign fft_input_xbar_recv_val[1] = spi_master_send_val;
 assign spi_master_send_val        = fft_input_xbar_recv_rdy[1];
 
-logic [BIT_WIDTH - 1:0] fft_input_xbar_send_msg[0:1];
-logic fft_input_xbar_send_val[0:1];
-logic fft_input_xbar_send_rdy[0:1];
 
 
-logic intermediate_msg[0:0];
+
+
 assign module_interconnect_snk_rdy[1] = intermediate_msg[0];
 
 //Address 2: FFT Output Crossbar Control
@@ -158,9 +186,7 @@ crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(1), .CONTROL_BIT_
                                                                                     .control_val(module_interconnect_src_val[2]), 
                                                                                     .control_rdy(module_interconnect_src_rdy[2]));
 
-logic [BIT_WIDTH - 1:0] fft_output_xbar_recv_msg[0:1];
-logic fft_output_xbar_recv_val[0:1];
-logic fft_output_xbar_recv_rdy[0:1];
+
 
 //Address 6: SPI Master Crossbar 
 crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(1), .CONTROL_BIT_WIDTH(BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2)) spi_master_xbar (.clk(clk), 
@@ -178,9 +204,7 @@ crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(1), .CONTROL_BIT_
                                                                                     .control_val(module_interconnect_src_val[6]), 
                                                                                     .control_rdy(module_interconnect_src_rdy[6]));
 
-logic [BIT_WIDTH - 1:0] spi_master_xbar_recv_msg[0:1];
-logic spi_master_xbar_recv_val[0:1];
-logic spi_master_xbar_recv_rdy[0:1];
+
 
 assign spi_master_xbar_recv_msg[0]     = module_interconnect_src_msg[8];
 assign spi_master_xbar_recv_val[0]     = module_interconnect_src_val[8];
@@ -221,13 +245,7 @@ SPIMasterValRdyVRTL #(.nbits(32), .ncs(1)) spi_master (
   .freq_ifc_msg(module_interconnect_src_rdy[3]) //new
   );
 
-logic                   spi_master_send_val;
-logic                   spi_master_send_rdy;
-logic [BIT_WIDTH - 1:0] spi_master_send_msg;
 
-logic                   spi_master_recv_val;
-logic                   spi_master_recv_rdy[0:0];
-logic [BIT_WIDTH - 1:0] spi_master_recv_msg;
 
 
 DeserializerVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_SAMPLES(N_SAMPLES)) deserializer(
@@ -266,15 +284,7 @@ SerializerVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_SAMPLES(N_SAMPLES)) serializer(
     .send_rdy(fft_output_xbar_recv_rdy[1])
 );
 
-logic [BIT_WIDTH - 1:0]  recv_msg_s   [N_SAMPLES - 1:0];
-logic                    recv_rdy_s;
-logic                    recv_val_s;
 
-
-
-logic [BIT_WIDTH - 1:0]  send_msg_d   [N_SAMPLES - 1:0];
-logic                    send_rdy_d;
-logic                    send_val_d;
 
 FFTSPIMinionVRTL #(.BIT_WIDTH(BIT_WIDTH), .DECIMAL_PT(DECIMAL_PT), .N_SAMPLES(8)) tape_in_one_model (
                    .clk(clk), .reset(reset), 
