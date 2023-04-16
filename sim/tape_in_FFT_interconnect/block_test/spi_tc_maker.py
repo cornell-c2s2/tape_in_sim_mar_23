@@ -279,13 +279,13 @@ def run_test_vector_on_dut(dut, spi_select, val_write, val_read, src_msg, snk_ms
   spi_array = generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE)
   spi_ms_array = generate_master_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE, FREQ)
 
-  if(spi_select = 0):
+  if(spi_select == 0):
     for i in range(len(spi_array[0])):
       t( dut, spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], 0, 0, 0, '?', 0, 0, 0, '?', '?', '?', '?', 0)
-  elif(spi_select = 1):
+  elif(spi_select == 1):
     for i in range(len(spi_array[0])):
       t( dut, 0, 0, 0, '?', spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], 0, 0, 0, '?', '?', '?', '?', 0)
-  elif(spi_select = 2):
+  elif(spi_select == 2):
     for i in range(len(spi_array[0])):
       t( dut, 0, 0, 0, '?', 0, 0, 0, '?', spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], '?', '?', '?', 0)
   elif(spi_select = 3):
