@@ -89,12 +89,12 @@ class TapeInMarchFL:
 
         elif(address == ADDRESS_MAPPING['FFT_input_crossbar_inj']):
             if(self.FFT_input_Xbar_in_state == 0 and self.FFT_input_Xbar_out_state == 0 and self.FFT_output_Xbar_in_state == 1):
-                self.deserializer_buffer.append(msg)
+                self.deserializer_buffer.append(msg.int())
                 return[None]
             elif(self.FFT_input_Xbar_in_state == 0 and self.FFT_input_Xbar_out_state == 1 and self.FFT_output_Xbar_in_state == 1):
                 return [concat(Bits4(1),msg)]
             elif(self.FFT_input_Xbar_in_state == 0 and self.FFT_input_Xbar_out_state == 0 and self.FFT_output_Xbar_in_state == 0):
-                return self.deserializer(msg)
+                return self.deserializer(msg.int())
 
 
         elif(address == ADDRESS_MAPPING['SPI_master_xbar_inj']):
@@ -109,7 +109,11 @@ class TapeInMarchFL:
         ret = [None]
         self.deserializer_buffer.append(msg)
         if len(self.deserializer_buffer) == FFT_LRG_SIZE:
+            print(self.deserializer_buffer)
             ret = fixed_point_fft(BIT_WIDTH, DECIMAL_PT, FFT_LRG_SIZE, self.deserializer_buffer)
+            for i in range(len(ret)):
+                print(repr(Bits36(int(ret[i]))))
+                ret[i] = concat(Bits4(1),Bits32(int(ret[i])))
             self.deserializer_buffer = []
         return ret
 
