@@ -14,11 +14,43 @@ def loopback(dut, value = Bits32(0xdeadbeef)):
     out_msg = fl_model.SPI_minion_input(in_msg)
     run_test_vector_on_dut(dut, 0x0, 0x1, 0x1, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
 
-def fft_injection_minion(dut):
-    pass
+def fft_injection_minion(dut, array):
 
-def bypass_injection_minion(dut):
-    pass
+    in_msg = FFT_Input_Crossbar_Control( Bits1(0), Bits1(0) )
+    out_msg = fl_model.SPI_minion_input(in_msg)
+    run_test_vector_on_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
+
+    in_msg = FFT_Output_Crossbar_Control( Bits1(0) )
+    out_msg = fl_model.SPI_minion_input(in_msg)
+    run_test_vector_on_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
+
+    for i in range(TapeInMarchFL.FFT_LRG_SIZE):
+        in_msg = FFT_Input_Crossbar_Injection(Bits32(array[i]))
+        out_msg = fl_model.SPI_minion_input(in_msg)
+        if(out_msg[0] == None):
+            run_test_vector_on_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
+        else:
+            for j in range(32 * round(math.log2(TapeInMarchFL.FFT_LRG_SIZE)) + 20):
+                dut.sim_tick()
+            for j in range(TapeInMarchFL.FFT_LRG_SIZE):
+                run_test_vector_on_dut(dut, 0x0, 0x0, 0x1, Bits36(0), out_msg[j], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
+
+
+        
+
+
+def bypass_injection_minion(dut, value = Bits32(0xFFFFFFFF)):
+    in_msg = FFT_Input_Crossbar_Control( Bits1(0), Bits1(1) )
+    out_msg = fl_model.SPI_minion_input(in_msg)
+    run_test_vector_on_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
+
+    in_msg = FFT_Output_Crossbar_Control( Bits1(1) )
+    out_msg = fl_model.SPI_minion_input(in_msg)
+    run_test_vector_on_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
+
+    in_msg = FFT_Input_Crossbar_Injection(value)
+    out_msg = fl_model.SPI_minion_input(in_msg)
+    run_test_vector_on_dut(dut, 0x0, 0x1, 0x1, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
 
 def spi_config_master(dut):
     pass

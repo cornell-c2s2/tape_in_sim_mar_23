@@ -29,7 +29,7 @@ class TapeInMarchFL:
 
     BIT_WIDTH    = 32
     DECIMAL_PT   = 16
-    FFT_LRG_SIZE = 256
+    FFT_LRG_SIZE = 8
     FFT_SML_SIZE = 8
     MAXIMUM_ADDRESSIBLE_COMPONENTS = 16
     LOG2_MAXIMUM_ADDRESSIBLE_COMPONENTS = round(log2(MAXIMUM_ADDRESSIBLE_COMPONENTS))
@@ -92,7 +92,7 @@ class TapeInMarchFL:
                 self.deserializer_buffer.append(msg)
                 return[None]
             elif(self.FFT_input_Xbar_in_state == 0 and self.FFT_input_Xbar_out_state == 1 and self.FFT_output_Xbar_in_state == 1):
-                return [msg]
+                return [concat(Bits4(1),msg)]
             elif(self.FFT_input_Xbar_in_state == 0 and self.FFT_input_Xbar_out_state == 0 and self.FFT_output_Xbar_in_state == 0):
                 return self.deserializer(msg)
 
@@ -108,7 +108,7 @@ class TapeInMarchFL:
 
         ret = [None]
         self.deserializer_buffer.append(msg)
-        if len(self.deserializer_buffer == FFT_LRG_SIZE):
+        if len(self.deserializer_buffer) == FFT_LRG_SIZE:
             ret = fixed_point_fft(BIT_WIDTH, DECIMAL_PT, FFT_LRG_SIZE, self.deserializer_buffer)
             self.deserializer_buffer = []
         return ret

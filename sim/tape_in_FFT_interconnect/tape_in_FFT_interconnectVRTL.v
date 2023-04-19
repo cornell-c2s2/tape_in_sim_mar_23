@@ -13,7 +13,7 @@ module tape_in_FFT_interconnectVRTL
 #(
     BIT_WIDTH  = 32,
     DECIMAL_PT = 16,
-    N_SAMPLES  = 256
+    N_SAMPLES  = 8
 )
 (
     input  logic             clk,
@@ -142,6 +142,13 @@ assign module_interconnect_src_rdy[0] = module_interconnect_snk_rdy[0];
 assign module_interconnect_snk_msg[0] = module_interconnect_src_msg[0];
 
 
+assign fft_input_xbar_recv_msg[0]     = module_interconnect_src_msg[7];
+assign fft_input_xbar_recv_val[0]     = module_interconnect_src_val[7];
+assign module_interconnect_src_rdy[7] = fft_input_xbar_recv_rdy[0];
+
+assign fft_input_xbar_recv_msg[1] = spi_master_send_msg;
+assign fft_input_xbar_recv_val[1] = spi_master_send_val;
+assign spi_master_send_val        = fft_input_xbar_recv_rdy[1];
 
 //Address 1: FFT Input Crossbar Control
 crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(2), .CONTROL_BIT_WIDTH(BIT_WIDTH)) fft_input_xbar  (.clk(clk), 
@@ -161,14 +168,10 @@ crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(2), .CONTROL_BIT_
 
 
 
-assign fft_input_xbar_recv_msg[0]     = module_interconnect_src_msg[7];
-assign fft_input_xbar_recv_val[0]     = module_interconnect_src_val[7];
-assign module_interconnect_src_rdy[7] = fft_input_xbar_recv_rdy[0];
 
-assign fft_input_xbar_recv_msg[1] = spi_master_send_msg;
-assign fft_input_xbar_recv_val[1] = spi_master_send_val;
-assign spi_master_send_val        = fft_input_xbar_recv_rdy[1];
-
+assign fft_output_xbar_recv_msg[1] = fft_input_xbar_send_msg [1];
+assign fft_output_xbar_recv_val[1] = fft_input_xbar_send_val [1];
+assign fft_input_xbar_send_rdy [1] = fft_output_xbar_recv_rdy[1];
 
 
 
@@ -282,9 +285,9 @@ SerializerVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_SAMPLES(N_SAMPLES)) serializer(
     .recv_val(recv_val_s),
     .recv_rdy(recv_rdy_s),
 
-    .send_msg(fft_output_xbar_recv_msg[1]),
-    .send_val(fft_output_xbar_recv_val[1]),
-    .send_rdy(fft_output_xbar_recv_rdy[1])
+    .send_msg(fft_output_xbar_recv_msg[0]),
+    .send_val(fft_output_xbar_recv_val[0]),
+    .send_rdy(fft_output_xbar_recv_rdy[0])
 );
 
 

@@ -19,6 +19,8 @@ from tape_in_FFT_interconnect.tape_in_FFT_interconnectRTL import FFTInterconnect
 
 from .coarse_instruction_digraph import *
 
+import random
+
 # To ensure reproducible testing
 
 
@@ -37,5 +39,52 @@ def test_loopback( cmdline_opts ):
 
   dut.sim_reset()
   loopback(dut)
+
+def test_loopback_random( cmdline_opts ): #Actually works. Nutty - WS
+  dut = FFTInterconnectVRTL()
+  dut = config_model_with_cmdline_opts( dut, cmdline_opts, duts=[] )
+  dut.apply( DefaultPassGroup( linetrace=True ) )
+
+  dut.sim_reset()
+
+  for i in range(100):
+    loopback(dut, Bits32(random.randint(-100000,100000)))
+
+def test_crossbar_bypass( cmdline_opts ):
+  dut = FFTInterconnectVRTL()
+  dut = config_model_with_cmdline_opts( dut, cmdline_opts, duts=[] )
+  dut.apply( DefaultPassGroup( linetrace=True ) )
+
+  dut.sim_reset()
+
+  bypass_injection_minion(dut)
   
+def test_crossbar_bypass( cmdline_opts ):
+  dut = FFTInterconnectVRTL()
+  dut = config_model_with_cmdline_opts( dut, cmdline_opts, duts=[] )
+  dut.apply( DefaultPassGroup( linetrace=True ) )
+
+  dut.sim_reset()
+
+  bypass_injection_minion(dut)
+  
+def test_crossbar_bypass_random( cmdline_opts ): #Actually works. Nutty - WS
+  dut = FFTInterconnectVRTL()
+  dut = config_model_with_cmdline_opts( dut, cmdline_opts, duts=[] )
+  dut.apply( DefaultPassGroup( linetrace=True ) )
+
+  dut.sim_reset()
+
+  for i in range(100):
+    bypass_injection_minion(dut, Bits32(random.randint(-100000,100000)))
+
+def test_fft_injection_minion_basic( cmdline_opts ):
+  dut = FFTInterconnectVRTL()
+  dut = config_model_with_cmdline_opts( dut, cmdline_opts, duts=[] )
+  dut.apply( DefaultPassGroup( linetrace=True ) )
+
+  dut.sim_reset()
+
+  inarray = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+  fft_injection_minion(dut, inarray)
 

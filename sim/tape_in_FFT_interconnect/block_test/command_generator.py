@@ -45,7 +45,7 @@ def FFT_Loopback(message):
 # output = 0 → FFT
 # output = 1 → bypass FFT
 def FFT_Input_Crossbar_Control(input, output):
-    msg = concat(Bits4(1), input, output, BitsN(30,v=0))
+    msg = concat(Bits4(1), input, output, Bits30(0))
     return Bits36(msg)
 
 #--------------------------------------------------
@@ -56,7 +56,7 @@ def FFT_Input_Crossbar_Control(input, output):
 # input = 0 → FFT
 # input = 1 → Bypass FFT
 def FFT_Output_Crossbar_Control(input):
-    msg = concat(Bits4(2), input, BitsN(31,v=0))
+    msg = concat(Bits4(2), input, Bits31(0))
     return Bits36(msg)
 
 #--------------------------------------------------
@@ -68,7 +68,7 @@ def FFT_Output_Crossbar_Control(input):
 # input = 001 → 1/4 clock speed
 # input = 010 → 1/8 clock speed
 def SPI_Master_Frequency_Select(input):
-    msg = concat(Bits4(3), input, BitsN(29,v=0))
+    msg = concat(Bits4(3), input, Bits29(0))
     return Bits36(msg)
 
 #--------------------------------------------------
@@ -79,7 +79,7 @@ def SPI_Master_Frequency_Select(input):
 # input = 0 → mic
 # input = 1 → undefined
 def SPI_Master_Chip_Select(input):
-    msg = concat(Bits4(4), input, BitsN(31,v=0))
+    msg = concat(Bits4(4), input, Bits31(0))
     return Bits36(msg)
 
 #--------------------------------------------------
@@ -93,7 +93,7 @@ def SPI_Master_Chip_Select(input):
 # ......
 # input = 11111 → packet size = 32
 def SPI_Packet_Size_Select(input):
-    msg = concat(Bits4(5), input, BitsN(31,v=0))
+    msg = concat(Bits4(5), input, Bits27(0))
     return Bits36(msg)
 
 #--------------------------------------------------
@@ -104,7 +104,7 @@ def SPI_Packet_Size_Select(input):
 # input = 0 → SPI Minion
 # input = 1 → Constant/continuous mode
 def SPI_Master_Crossbar_Select(input):
-    msg = concat(Bits4(6), input, BitsN(31,v=0))
+    msg = concat(Bits4(6), input, Bits31(31))
     return Bits36(msg)
 
 #--------------------------------------------------
