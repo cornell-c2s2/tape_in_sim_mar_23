@@ -105,13 +105,13 @@ def generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, 
     bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
     bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
     bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
-    bitwise_input_array_helper(output_arr, 0, 0,   src_msg[35 - i],   '?' )
-    bitwise_input_array_helper(output_arr, 0, 0,   src_msg[35 - i],   '?' )
-    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[35 - i],   '?' )
-    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[35 - i],   '?' )
-    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[35 - i],   '?' )
-    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[35 - i],   '?' )
-    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[35 - i],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 0,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    bitwise_input_array_helper(output_arr, 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
     bitwise_input_array_helper(output_arr, 0, 1,   0,            '?' )
 
   
@@ -170,7 +170,7 @@ def generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, 
     bitwise_input_array_helper(output_arr, 0, 1,   0,          '?' )
     #Confirm that what you get back is correct
     for i in range(PACKET_SIZE):
-      bitwise_input_array_helper(output_arr, 0, 0,   0,          snk_msg[35 - i]) # pull_en = 1
+      bitwise_input_array_helper(output_arr, 0, 0,   0,          snk_msg[PACKET_SIZE - i - 1]) # pull_en = 1
       bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
       bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
       bitwise_input_array_helper(output_arr, 0, 0,   0,         '?'        )
@@ -214,10 +214,11 @@ def generate_master_bitwise_test_from_input_array(val_write, val_read, src_msg, 
   bitwise_input_array_helper(output_arr, 1, 0,  '?', 0) #done
 
 
-def run_test_vector_on_dut(dut, spi_select, val_write, val_read, src_msg, snk_msg, PACKET_SIZE, FREQ):
+def run_test_vector_on_minion_dut(dut, spi_select, val_write, val_read, src_msg, snk_msg, PACKET_SIZE, FREQ):
+
+  spi_array = [[],[],[],[]]
 
   spi_array = generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE)
-  spi_ms_array = generate_master_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE, FREQ)
 
   if(spi_select == 0):
     for i in range(len(spi_array[0])):
@@ -228,6 +229,12 @@ def run_test_vector_on_dut(dut, spi_select, val_write, val_read, src_msg, snk_ms
   elif(spi_select == 2):
     for i in range(len(spi_array[0])):
       t( dut, Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', spi_array[0][i], spi_array[1][i], spi_array[2][i], spi_array[3][i], '?', '?', '?', Bits1(0))
-  elif(spi_select == 3):
-    for i in range(len(spi_array[0])):
-      t( dut, Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', spi_ms_array[0][i], spi_ms_array[1][i], spi_ms_array[2][i], spi_ms_array[3][i])
+
+def run_test_vector_on_master_dut(dut, spi_select, val_write, val_read, src_msg, snk_msg, PACKET_SIZE, FREQ):
+
+  spi_array = [[],[],[],[]]
+  spi_ms_array = [[],[],[],[]]
+  spi_ms_array = generate_master_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE, FREQ)
+
+  for i in range(len(spi_array[0])):
+    t( dut, Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', spi_ms_array[0][i], spi_ms_array[1][i], spi_ms_array[2][i], spi_ms_array[3][i])

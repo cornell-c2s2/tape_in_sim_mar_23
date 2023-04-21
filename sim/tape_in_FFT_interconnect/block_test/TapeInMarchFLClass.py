@@ -75,12 +75,16 @@ class TapeInMarchFL:
             return [None]
 
         elif(address == ADDRESS_MAPPING['SPI_master_frequency_sel']):
+            self.SPI_master_frequency_state = msg
+            self.FREQ = msg[BIT_WIDTH - 2: BIT_WIDTH].int()
             return [None]
 
         elif(address == ADDRESS_MAPPING['SPI_master_chip_sel']):
+            self.SPI_master_chip_select = msg
             return [None]
 
         elif(address == ADDRESS_MAPPING['SPI_packet_size_sel']):
+            self.SPI_master_pkt_size_select = msg
             return [None]
 
         elif(address == ADDRESS_MAPPING['SPI_master_xbar_sel']):
@@ -98,8 +102,21 @@ class TapeInMarchFL:
 
 
         elif(address == ADDRESS_MAPPING['SPI_master_xbar_inj']):
-            return [None]
+            return [msg]
 
+
+    def SPI_master_input(self, input_bits):
+
+        msg = input_bits
+
+        if(self.FFT_input_Xbar_in_state == 1 and self.FFT_input_Xbar_out_state == 0 and self.FFT_output_Xbar_in_state == 1):
+                self.deserializer_buffer.append(msg.int())
+                return[None]
+        elif(self.FFT_input_Xbar_in_state == 1 and self.FFT_input_Xbar_out_state == 1 and self.FFT_output_Xbar_in_state == 1):
+            return [concat(Bits4(1),msg)]
+        elif(self.FFT_input_Xbar_in_state == 1 and self.FFT_input_Xbar_out_state == 0 and self.FFT_output_Xbar_in_state == 0):
+            return self.deserializer(msg.int())
+        
     def deserializer(self, msg):
 
         BIT_WIDTH = TapeInMarchFL.BIT_WIDTH
@@ -109,15 +126,13 @@ class TapeInMarchFL:
         ret = [None]
         self.deserializer_buffer.append(msg)
         if len(self.deserializer_buffer) == FFT_LRG_SIZE:
-            print(self.deserializer_buffer)
+
             ret = fixed_point_fft(BIT_WIDTH, DECIMAL_PT, FFT_LRG_SIZE, self.deserializer_buffer)
             for i in range(len(ret)):
-                print(repr(Bits36(int(ret[i]))))
+
                 ret[i] = concat(Bits4(1),Bits32(int(ret[i])))
             self.deserializer_buffer = []
         return ret
-
-
 
 
 

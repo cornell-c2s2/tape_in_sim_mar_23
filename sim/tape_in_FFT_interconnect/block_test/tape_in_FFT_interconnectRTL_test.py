@@ -101,3 +101,11 @@ def test_fft_injection_minion_basic_random( cmdline_opts ):
 
   fft_injection_minion(dut, inarray)
 
+
+def test_master_bypass_injection( cmdline_opts ):
+  dut = FFTInterconnectVRTL()
+  dut = config_model_with_cmdline_opts( dut, cmdline_opts, duts=[] )
+  dut.apply( DefaultPassGroup( linetrace=False ) )
+
+  dut.sim_reset()
+  bypass_inject_master(dut, Bits32(1))
