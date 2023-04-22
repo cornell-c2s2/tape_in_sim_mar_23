@@ -66,6 +66,9 @@ def spi_config_master(dut, frequency : Bits3, packet_size : Bits5):
 
 def bypass_inject_master(dut, spi_master_message):
     
+    in_msg = SPI_Packet_Size_Select( Bits5(0x1F) )
+    out_msg = fl_model.SPI_minion_input( in_msg )
+    run_test_vector_on_minion_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
 
     in_msg  = FFT_Input_Crossbar_Control( Bits1(1), Bits1(1) )
     out_msg = fl_model.SPI_minion_input( in_msg )
@@ -83,7 +86,11 @@ def bypass_inject_master(dut, spi_master_message):
     out_msg = Bits36(0)
     in_minion_spi = concat(Bits4(7),spi_master_message)
     run_test_vector_on_master_dut(dut, 0x3, 0x0, 0x0, in_msg, out_msg, 32, fl_model.FREQ)
-    run_test_vector_on_minion_dut(dut, 0x0, 0x0, 0x1, in_minion_spi, in_minion_spi, TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
+
+    in_msg  = SPI_Master_Crossbar_Select( Bits1(0) )
+    out_msg = fl_model.SPI_minion_input( in_msg )
+    run_test_vector_on_minion_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
+    #run_test_vector_on_minion_dut(dut, 0x0, 0x0, 0x1, in_minion_spi, in_minion_spi, TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
 
 
 

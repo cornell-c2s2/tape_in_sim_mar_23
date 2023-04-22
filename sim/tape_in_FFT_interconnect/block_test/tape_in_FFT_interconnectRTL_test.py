@@ -108,4 +108,4 @@ def test_master_bypass_injection( cmdline_opts ):
   dut.apply( DefaultPassGroup( linetrace=False ) )
 
   dut.sim_reset()
-  bypass_inject_master(dut, Bits32(1))
+  bypass_inject_master(dut, Bits32(0xFFFFFFFF))

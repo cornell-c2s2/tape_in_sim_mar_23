@@ -230,25 +230,25 @@ SPIMasterValRdyVRTL #(.nbits(32), .ncs(2)) spi_master (
   .spi_ifc_mosi(master_mosi),
   .spi_ifc_sclk(master_sclk),
 
-  .recv_val(spi_master_send_val),
-  .recv_rdy(spi_master_send_rdy),
-  .recv_msg(spi_master_send_msg),
+  .recv_val(spi_master_recv_val),
+  .recv_rdy(spi_master_recv_rdy),
+  .recv_msg(spi_master_recv_msg),
 
-  .send_val(spi_master_recv_val),
-  .send_rdy(spi_master_recv_rdy),
-  .send_msg(spi_master_recv_msg),
+  .send_val(spi_master_send_val),
+  .send_rdy(spi_master_send_rdy),
+  .send_msg(spi_master_send_msg),
 
-  .packet_size_ifc_val(module_interconnect_src_msg[5]), //Address 5: SPI Master Packet Size Select
-  .packet_size_ifc_rdy(module_interconnect_src_val[5]),
-  .packet_size_ifc_msg(module_interconnect_src_rdy[5]),
+  .packet_size_ifc_val(module_interconnect_src_val[5]), //Address 5: SPI Master Packet Size Select
+  .packet_size_ifc_rdy(module_interconnect_src_rdy[5]),
+  .packet_size_ifc_msg({ 1'b0, module_interconnect_src_msg[5][BIT_WIDTH - 1:BIT_WIDTH - 5]}),
 
-  .cs_addr_ifc_val(module_interconnect_src_msg[4]), // Address 4: SPI Master Chip Select
-  .cs_addr_ifc_rdy(module_interconnect_src_val[4]),
-  .cs_addr_ifc_msg(module_interconnect_src_rdy[4]),
+  .cs_addr_ifc_val(module_interconnect_src_val[4]), // Address 4: SPI Master Chip Select
+  .cs_addr_ifc_rdy(module_interconnect_src_rdy[4]),
+  .cs_addr_ifc_msg(module_interconnect_src_msg[4]),
 
-  .freq_ifc_val(module_interconnect_src_msg[3]), //new //Address 3: SPI Master Frequency Select
-  .freq_ifc_rdy(module_interconnect_src_val[3]), //new 
-  .freq_ifc_msg(module_interconnect_src_rdy[3]) //new
+  .freq_ifc_val(module_interconnect_src_val[3]), //new //Address 3: SPI Master Frequency Select
+  .freq_ifc_rdy(module_interconnect_src_rdy[3]), //new 
+  .freq_ifc_msg(module_interconnect_src_msg[3]) //new
   );
 
 

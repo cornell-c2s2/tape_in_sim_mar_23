@@ -201,9 +201,9 @@ def generate_master_bitwise_test_from_input_array(val_write, val_read, src_msg, 
   bitwise_input_array_helper(output_arr, 0, 0,  1,   0) #START1
 
   for i in range(PACKET_SIZE):
-    bitwise_input_array_helper(output_arr, 0, 1,  src_msg[i],  ~src_msg[i]) #SCLK HIGH
+    bitwise_input_array_helper(output_arr, 0, 1,  snk_msg[i],  src_msg[i]) #SCLK HIGH
     for i in range(FREQ**2-1):#repeat for frequency configuration
-      bitwise_input_array_helper(output_arr, 0, 1,  src_msg[i],  ~src_msg[i])
+      bitwise_input_array_helper(output_arr, 0, 1,  snk_msg[i],  src_msg[i])
     
     bitwise_input_array_helper(output_arr, 0, 0,  '?', src_msg[i]) #SCLK LOW
     for i in range(FREQ**2-1): #repeat for frequency configuration
@@ -212,6 +212,7 @@ def generate_master_bitwise_test_from_input_array(val_write, val_read, src_msg, 
   
   bitwise_input_array_helper(output_arr, 0, 0,  '?', 0) #cs_low_wait
   bitwise_input_array_helper(output_arr, 1, 0,  '?', 0) #done
+  return output_arr
 
 
 def run_test_vector_on_minion_dut(dut, spi_select, val_write, val_read, src_msg, snk_msg, PACKET_SIZE, FREQ):
@@ -232,9 +233,9 @@ def run_test_vector_on_minion_dut(dut, spi_select, val_write, val_read, src_msg,
 
 def run_test_vector_on_master_dut(dut, spi_select, val_write, val_read, src_msg, snk_msg, PACKET_SIZE, FREQ):
 
-  spi_array = [[],[],[],[]]
   spi_ms_array = [[],[],[],[]]
   spi_ms_array = generate_master_bitwise_test_from_input_array(val_write, val_read, src_msg, snk_msg, PACKET_SIZE, FREQ)
 
-  for i in range(len(spi_array[0])):
-    t( dut, Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', spi_ms_array[0][i], spi_ms_array[1][i], spi_ms_array[2][i], spi_ms_array[3][i])
+  for i in range(len(spi_ms_array[0])):
+    #t( dut, Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', spi_ms_array[0][i], spi_ms_array[1][i], spi_ms_array[2][i], spi_ms_array[3][i])
+    t( dut, Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', Bits1(0), Bits1(0), Bits1(0), '?', '?', '?', '?', spi_ms_array[3][i])
