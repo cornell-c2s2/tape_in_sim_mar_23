@@ -85,7 +85,7 @@ def SPI_Master_Chip_Select(input):
 #--------------------------------------------------
 # 0x5 SPI_Packet_Size_Select
 #--------------------------------------------------
-# [5         |27]
+# [6         |27]
 #  input     |DNC
 # input = 00000 → packet size = 1
 # input = 00001 → packet size = 2
@@ -93,7 +93,7 @@ def SPI_Master_Chip_Select(input):
 # ......
 # input = 11111 → packet size = 32
 def SPI_Packet_Size_Select(input):
-    msg = concat(Bits4(5), input, Bits27(0))
+    msg = concat(Bits4(5), input, Bits26(0))
     return Bits36(msg)
 
 #--------------------------------------------------
@@ -123,5 +123,11 @@ def SPI_Master_Crossbar_Injection(input):
     msg = concat(Bits4(8), input)
     return Bits36(msg)
 
-
+#--------------------------------------------------
+# 0x8 FFT-Deserializer-Reset
+#--------------------------------------------------
+# Input = 32 bit DNC
+def FFT_Deserializer_Reset():
+    msg = concat(Bits4(9), Bits32(0))
+    return Bits36(msg)
 

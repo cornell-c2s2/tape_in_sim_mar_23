@@ -104,6 +104,9 @@ logic                    master_cs_temp [0:1];
 
 logic [BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2 - 1 : 0 ] arb_imm;
 
+logic deserializer_reset;
+
+
 
 SPIMinionAdapterConnectedVRTL #(.BIT_WIDTH(BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2), .N_SAMPLES(N_SAMPLES) ) ctrl_spi_minion 
                 (.clk(clk), .reset(reset), .cs(minion_cs), .sclk(minion_sclk), .mosi(minion_mosi), .miso(minion_miso),
@@ -148,7 +151,7 @@ assign module_interconnect_src_rdy[7] = fft_input_xbar_recv_rdy[0];
 
 assign fft_input_xbar_recv_msg[1] = spi_master_send_msg;
 assign fft_input_xbar_recv_val[1] = spi_master_send_val;
-assign spi_master_send_val        = fft_input_xbar_recv_rdy[1];
+assign spi_master_send_rdy        = fft_input_xbar_recv_rdy[1];
 
 //Address 1: FFT Input Crossbar Control
 crossbarVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_INPUTS(2), .N_OUTPUTS(2), .CONTROL_BIT_WIDTH(BIT_WIDTH)) fft_input_xbar  (.clk(clk), 
@@ -240,7 +243,7 @@ SPIMasterValRdyVRTL #(.nbits(32), .ncs(2)) spi_master (
 
   .packet_size_ifc_val(module_interconnect_src_val[5]), //Address 5: SPI Master Packet Size Select
   .packet_size_ifc_rdy(module_interconnect_src_rdy[5]),
-  .packet_size_ifc_msg({ 1'b0, module_interconnect_src_msg[5][BIT_WIDTH - 1:BIT_WIDTH - 5]}),
+  .packet_size_ifc_msg({ 1'b0, module_interconnect_src_msg[5][BIT_WIDTH - 1:BIT_WIDTH - 6]}),
 
   .cs_addr_ifc_val(module_interconnect_src_val[4]), // Address 4: SPI Master Chip Select
   .cs_addr_ifc_rdy(module_interconnect_src_rdy[4]),
@@ -252,11 +255,12 @@ SPIMasterValRdyVRTL #(.nbits(32), .ncs(2)) spi_master (
   );
 
 
-
+assign deserializer_reset = reset || module_interconnect_src_val[9];
+assign module_interconnect_src_rdy[9] = 1;
 
 DeserializerVRTL #(.BIT_WIDTH(BIT_WIDTH), .N_SAMPLES(N_SAMPLES)) deserializer(
     .clk(clk),
-    .reset(reset),
+    .reset(deserializer_reset),
     .recv_msg(fft_input_xbar_send_msg[0]),
     .recv_val(fft_input_xbar_send_val[0]),
     .recv_rdy(fft_input_xbar_send_rdy[0]),

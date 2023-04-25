@@ -109,3 +109,15 @@ def test_master_bypass_injection( cmdline_opts ):
 
   dut.sim_reset()
   bypass_inject_master(dut, Bits32(0xFFFFFFFF))
+
+def test_master_fft_injection( cmdline_opts ):
+  dut = FFTInterconnectVRTL()
+  dut = config_model_with_cmdline_opts( dut, cmdline_opts, duts=[] )
+  dut.apply( DefaultPassGroup( linetrace=False ) )
+
+  dut.sim_reset()
+  array = [1,1,1,1,1,1,1,1]
+  fft_inject_master(dut, array)
+  array = [2,2,2,2,2,2,2,2]
+  fft_inject_master(dut, array)
+  

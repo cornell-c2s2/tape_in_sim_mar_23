@@ -110,8 +110,7 @@ class TapeInMarchFL:
         msg = input_bits
 
         if(self.FFT_input_Xbar_in_state == 1 and self.FFT_input_Xbar_out_state == 0 and self.FFT_output_Xbar_in_state == 1):
-                self.deserializer_buffer.append(msg.int())
-                return[None]
+                return self.deserializer_buffer.append(msg.int())
         elif(self.FFT_input_Xbar_in_state == 1 and self.FFT_input_Xbar_out_state == 1 and self.FFT_output_Xbar_in_state == 1):
             return [concat(Bits4(1),msg)]
         elif(self.FFT_input_Xbar_in_state == 1 and self.FFT_input_Xbar_out_state == 0 and self.FFT_output_Xbar_in_state == 0):
