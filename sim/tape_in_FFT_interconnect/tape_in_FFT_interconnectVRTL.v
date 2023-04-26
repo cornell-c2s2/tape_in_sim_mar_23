@@ -247,11 +247,11 @@ SPIMasterValRdyVRTL #(.nbits(32), .ncs(2)) spi_master (
 
   .cs_addr_ifc_val(module_interconnect_src_val[4]), // Address 4: SPI Master Chip Select
   .cs_addr_ifc_rdy(module_interconnect_src_rdy[4]),
-  .cs_addr_ifc_msg(module_interconnect_src_msg[4]),
+  .cs_addr_ifc_msg(module_interconnect_src_msg[4][BIT_WIDTH - 1:BIT_WIDTH - 2]),
 
   .freq_ifc_val(module_interconnect_src_val[3]), //new //Address 3: SPI Master Frequency Select
   .freq_ifc_rdy(module_interconnect_src_rdy[3]), //new 
-  .freq_ifc_msg(module_interconnect_src_msg[3]) //new
+  .freq_ifc_msg(module_interconnect_src_msg[3][BIT_WIDTH - 1:BIT_WIDTH - 3]) //new
   );
 
 

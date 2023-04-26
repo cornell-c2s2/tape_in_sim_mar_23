@@ -224,130 +224,130 @@ def generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, 
 
 #Secret sauce that generates a test vector which allows you to just iterate through the array and pass values to t()
 # [[cs],[sclk],[mosi].[miso]]
-def generate_minion_bitwise_test_from_input_array_flush_spi(val_write, val_read, src_msg, snk_msg, PACKET_SIZE):
+def generate_minion_bitwise_test_from_input_array_flush_spi(dut, val_write, val_read, src_msg, snk_msg, PACKET_SIZE):
 
   #Hold cs to 1 so the SPI minion is reset to the base state.
 
      #cs clk  mosi  miso
-  tr( 1, 0,   0,    0)
-  tr( 1, 0,   0,    0)
-  tr( 1, 0,   0,    0)
-  tr( 1, 0,   0,    0)
-  tr( 1, 0,   0,    0)
+  tr( dut, 1, 0,   0,    0)
+  tr( dut, 1, 0,   0,    0)
+  tr( dut, 1, 0,   0,    0)
+  tr( dut, 1, 0,   0,    0)
+  tr( dut, 1, 0,   0,    0)
 
 
   #Sending the val_write and val_read bits over
 
-  tr( 0, 0,   0,            '?' ) # pull_en = 1
-  tr( 0, 0,   0,            '?' )
-  tr( 0, 0,   0,            '?' )
-  tr( 0, 0,   0,            '?' )
-  tr( 0, 0,   val_write,    '?' )
-  tr( 0, 0,   val_write,    '?' )
-  tr( 0, 1,   val_write,    '?' )
-  tr( 0, 1,   val_write,    '?' )
-  tr( 0, 1,   val_write,    '?' )
-  tr( 0, 1,   val_write,    '?' )
-  tr( 0, 1,   val_write,    '?' )
-  tr( 0, 1,   0,            '?' )
-  tr( 0, 0,   0,            '?' ) # pull_en = 1
-  tr( 0, 0,   0,            '?' )
-  tr( 0, 0,   0,            '?' )
-  tr( 0, 0,   0,            '?' )
-  tr( 0, 0,   val_read,     '?' )
-  tr( 0, 0,   val_read,     '?' )
-  tr( 0, 1,   val_read,     '?' )
-  tr( 0, 1,   val_read,     '?' )
-  tr( 0, 1,   val_read,     '?' )
-  tr( 0, 1,   val_read,     '?' )
-  tr( 0, 1,   val_read,     '?' )
-  tr( 0, 1,   0,            '?' )
+  tr( dut, 0, 0,   0,            '?' ) # pull_en = 1
+  tr( dut, 0, 0,   0,            '?' )
+  tr( dut, 0, 0,   0,            '?' )
+  tr( dut, 0, 0,   0,            '?' )
+  tr( dut, 0, 0,   val_write,    '?' )
+  tr( dut, 0, 0,   val_write,    '?' )
+  tr( dut, 0, 1,   val_write,    '?' )
+  tr( dut, 0, 1,   val_write,    '?' )
+  tr( dut, 0, 1,   val_write,    '?' )
+  tr( dut, 0, 1,   val_write,    '?' )
+  tr( dut, 0, 1,   val_write,    '?' )
+  tr( dut, 0, 1,   0,            '?' )
+  tr( dut, 0, 0,   0,            '?' ) # pull_en = 1
+  tr( dut, 0, 0,   0,            '?' )
+  tr( dut, 0, 0,   0,            '?' )
+  tr( dut, 0, 0,   0,            '?' )
+  tr( dut, 0, 0,   val_read,     '?' )
+  tr( dut, 0, 0,   val_read,     '?' )
+  tr( dut, 0, 1,   val_read,     '?' )
+  tr( dut, 0, 1,   val_read,     '?' )
+  tr( dut, 0, 1,   val_read,     '?' )
+  tr( dut, 0, 1,   val_read,     '?' )
+  tr( dut, 0, 1,   val_read,     '?' )
+  tr( dut, 0, 1,   0,            '?' )
 
   #User defined payload
   for i in range(PACKET_SIZE):
-    tr( 0, 0,   0,            '?' ) # pull_en = 1
-    tr( 0, 0,   0,            '?' )
-    tr( 0, 0,   0,            '?' )
-    tr( 0, 0,   0,            '?' )
-    tr( 0, 0,   src_msg[PACKET_SIZE - i - 1],   '?' )
-    tr( 0, 0,   src_msg[PACKET_SIZE - i - 1],   '?' )
-    tr( 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
-    tr( 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
-    tr( 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
-    tr( 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
-    tr( 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
-    tr( 0, 1,   0,            '?' )
+    tr( dut, 0, 0,   0,            '?' ) # pull_en = 1
+    tr( dut, 0, 0,   0,            '?' )
+    tr( dut, 0, 0,   0,            '?' )
+    tr( dut, 0, 0,   0,            '?' )
+    tr( dut, 0, 0,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    tr( dut, 0, 0,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    tr( dut, 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    tr( dut, 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    tr( dut, 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    tr( dut, 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    tr( dut, 0, 1,   src_msg[PACKET_SIZE - i - 1],   '?' )
+    tr( dut, 0, 1,   0,            '?' )
 
   
   #pull CS high to end transaction
-  tr( 1, 0,   0,            '?' ) # pull_en = 1
-  tr( 1, 0,   0,            '?' )
-  tr( 1, 0,   0,            '?' )
-  tr( 1, 0,   0,            '?' )
-  tr( 1, 0,   0,            '?' )
-  tr( 1, 0,   0,            '?' )
-  tr( 1, 1,   0,            '?' )
-  tr( 1, 1,   0,            '?' )
-  tr( 1, 1,   0,            '?' )
-  tr( 1, 1,   0,            '?' )
-  tr( 1, 1,   0,            '?' )
-  tr( 1, 1,   0,            '?' )
+  tr( dut, 1, 0,   0,            '?' ) # pull_en = 1
+  tr( dut, 1, 0,   0,            '?' )
+  tr( dut, 1, 0,   0,            '?' )
+  tr( dut, 1, 0,   0,            '?' )
+  tr( dut, 1, 0,   0,            '?' )
+  tr( dut, 1, 0,   0,            '?' )
+  tr( dut, 1, 1,   0,            '?' )
+  tr( dut, 1, 1,   0,            '?' )
+  tr( dut, 1, 1,   0,            '?' )
+  tr( dut, 1, 1,   0,            '?' )
+  tr( dut, 1, 1,   0,            '?' )
+  tr( dut, 1, 1,   0,            '?' )
 
   #if you are expecting data back... 
   if val_read == 1:
     #Manually send that we are not reading or writing in the next cycles. 
-    tr( 1, 0,   0,          '?' ) # pull_en = 1
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
+    tr( dut, 1, 0,   0,          '?' ) # pull_en = 1
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
 
-    valid_msg = bool(tr( 0, 0,   0,      dut.spi_min.miso    )) # pull_en = 1
+    valid_msg = bool(tr(dut,  0, 0,   0,      dut.spi_min.miso    )) # pull_en = 1
 
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 0,   0,          1   ) # pull_en = 1
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 0,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
-    tr( 0, 1,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 0,   0,          1   ) # pull_en = 1
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 0,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
+    tr( dut, 0, 1,   0,          '?' )
     #Confirm that what you get back is correct
     for i in range(PACKET_SIZE):
-      tr( 0, 0,   0,          '?')
-      tr( 0, 0,   0,         '?'        )
-      tr( 0, 0,   0,         '?'        )
-      tr( 0, 0,   0,         '?'        )
-      tr( 0, 0,   0,         '?'        )
-      tr( 0, 0,   0,         '?'        )
-      tr( 0, 1,   0,         '?'        )
-      tr( 0, 1,   0,         '?'        )
-      tr( 0, 1,   0,         '?'        )
-      tr( 0, 1,   0,         '?'        )
-      tr( 0, 1,   0,         '?'        )
-      tr( 0, 1,   0,         '?'        )
+      tr( dut, 0, 0,   0,          '?')
+      tr( dut, 0, 0,   0,         '?'        )
+      tr( dut, 0, 0,   0,         '?'        )
+      tr( dut, 0, 0,   0,         '?'        )
+      tr( dut, 0, 0,   0,         '?'        )
+      tr( dut, 0, 0,   0,         '?'        )
+      tr( dut, 0, 1,   0,         '?'        )
+      tr( dut, 0, 1,   0,         '?'        )
+      tr( dut, 0, 1,   0,         '?'        )
+      tr( dut, 0, 1,   0,         '?'        )
+      tr( dut, 0, 1,   0,         '?'        )
+      tr( dut, 0, 1,   0,         '?'        )
   
   return valid_msg
 
@@ -418,11 +418,11 @@ def generate_master_minion_immediate_transition_bitwise_test_from_input_array(va
   bitwise_input_array_helper_master_transition(output_arr, 1, 0, 0, '?', 0, 1,  mas_snk_msg[PACKET_SIZE_MASTER - 1],  mas_src_msg[PACKET_SIZE_MASTER - 1]) #SCLK HIGH
   for i in range(PACKET_SIZE_MASTER):
     bitwise_input_array_helper_master_transition(output_arr, 1, 0, 0, '?', 0, 1,  mas_snk_msg[PACKET_SIZE_MASTER - i - 1],  mas_src_msg[PACKET_SIZE_MASTER - i - 1]) #SCLK HIGH
-    for i in range(FREQ**2-1):#repeat for frequency configuration
+    for j in range(2**(FREQ) - 1):#repeat for frequency configuration
       bitwise_input_array_helper_master_transition(output_arr, 1, 0, 0, '?', 0, 1,  mas_snk_msg[PACKET_SIZE_MASTER - i - 1],  mas_src_msg[PACKET_SIZE_MASTER - i - 1])
 
     bitwise_input_array_helper_master_transition(output_arr, 1, 1, 0, '?', 0, 0,  '?', ~mas_src_msg[PACKET_SIZE_MASTER - i - 1]) #SCLK LOW
-    for i in range(FREQ**2-1): #repeat for frequency configuration
+    for j in range(2**(FREQ) - 1): #repeat for frequency configuration
       bitwise_input_array_helper_master_transition(output_arr, 1, 1, 0, '?', 0, 0,  '?', ~mas_src_msg[PACKET_SIZE_MASTER - i - 1])
   
   bitwise_input_array_helper_master_transition(output_arr, 1, 0,   0,            '?', '?', '?', '?', 0 )
@@ -569,11 +569,11 @@ def generate_master_bitwise_test_from_input_array(val_write, val_read, src_msg, 
 
   for i in range(PACKET_SIZE):
     bitwise_input_array_helper(output_arr, 0, 1,  snk_msg[PACKET_SIZE - i - 1],  src_msg[PACKET_SIZE - i - 1]) #SCLK HIGH
-    for i in range(FREQ**2-1):#repeat for frequency configuration
+    for j in range(2**(FREQ) - 1):#repeat for frequency configuration
       bitwise_input_array_helper(output_arr, 0, 1,  snk_msg[PACKET_SIZE - i - 1],  src_msg[PACKET_SIZE - i - 1])
     
     bitwise_input_array_helper(output_arr, 0, 0,  '?', src_msg[PACKET_SIZE - i - 1]) #SCLK LOW
-    for i in range(FREQ**2-1): #repeat for frequency configuration
+    for j in range(2**(FREQ) - 1): #repeat for frequency configuration
       bitwise_input_array_helper(output_arr, 0, 0,  '?', src_msg[PACKET_SIZE - i - 1])
 
   

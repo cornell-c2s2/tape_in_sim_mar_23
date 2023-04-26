@@ -76,7 +76,7 @@ class TapeInMarchFL:
 
         elif(address == ADDRESS_MAPPING['SPI_master_frequency_sel']):
             self.SPI_master_frequency_state = msg
-            self.FREQ = msg[BIT_WIDTH - 2: BIT_WIDTH].int()
+            self.FREQ = int(msg[BIT_WIDTH - 3: BIT_WIDTH])
             return [None]
 
         elif(address == ADDRESS_MAPPING['SPI_master_chip_sel']):
