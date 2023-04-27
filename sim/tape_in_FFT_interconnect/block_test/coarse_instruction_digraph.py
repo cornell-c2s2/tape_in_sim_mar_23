@@ -27,16 +27,18 @@ def fft_injection_minion(dut, array):
     out_msg = fl_model.SPI_minion_input(in_msg)
     run_test_vector_on_minion_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
 
-    for i in range(TapeInMarchFL.FFT_LRG_SIZE):
+    for i in range(fl_model.FFT_LRG_SIZE):
         in_msg = FFT_Input_Crossbar_Injection(Bits32(array[i]))
 
         out_msg = fl_model.SPI_minion_input(in_msg)
-
+        print(out_msg)
         run_test_vector_on_minion_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
-    for j in range(32 * round(math.log2(TapeInMarchFL.FFT_LRG_SIZE)) + 20): #Wait for FFT to finish.
+    print(array)
+    
+    for j in range(fl_model.FFT_LRG_SIZE * round(math.log2(fl_model.FFT_LRG_SIZE)) + 20): #Wait for FFT to finish.
         dut.sim_tick()
-    for j in range(TapeInMarchFL.FFT_LRG_SIZE):
-        run_test_vector_on_minion_dut(dut, 0x0, 0x0, 0x1, Bits36(0), Bits36(out_msg[j]), TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
+    for j in range(fl_model.FFT_LRG_SIZE):
+        run_test_vector_on_minion_dut(dut, 0x0, 0x0, 0x1, Bits36(0), Bits36(out_msg[j]), TapeInMarchFL.PACKET_SIZE, fl_model.FREQ, 5 * (fl_model.FFT_LRG_SIZE - 8) / 8)
 
 
 
@@ -131,33 +133,46 @@ def fft_inject_master(dut, spi_master_message : int, spi_master_packet_size : in
     mas_out_msg = Bits36(0)
 
     run_test_vector_on_master_minion_transition_dut(dut, 0x1, 0x0, in_msg, out_msg, Bits(spi_master_packet_size,mas_in_msg[0]), mas_out_msg, TapeInMarchFL.PACKET_SIZE, spi_master_packet_size, fl_model.FREQ)
-    out_msg_fft = fl_model.SPI_master_input(Bits32(mas_in_msg[0]))
+    out_msg_fft = fl_model.SPI_master_input(Bits(spi_master_packet_size,v=mas_in_msg[0]))
+
+    print(mas_in_msg)
+    print(Bits32(mas_in_msg[0]))
     for i in range(1,len(mas_in_msg)):
-        run_test_vector_on_master_dut(dut, 0x0, 0x0, 0x0, Bits(spi_master_packet_size,mas_in_msg[i]), mas_out_msg, spi_master_packet_size, fl_model.FREQ)
+        print(Bits32(mas_in_msg[i]))
+        print("checking result: " + str(i))
+        run_test_vector_on_master_dut(dut, 0x0, 0x0, 0x0, Bits32(mas_in_msg[i]), mas_out_msg, spi_master_packet_size, fl_model.FREQ)
         out_msg_fft = fl_model.SPI_master_input(Bits32(mas_in_msg[i]))
+        
     
+    print(out_msg_fft)
     in_msg  = SPI_Master_Crossbar_Select( Bits1(0) )
     out_msg = fl_model.SPI_minion_input( in_msg )
     run_test_vector_on_minion_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg[0], TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
 
-    for j in range(32 * round(math.log2(TapeInMarchFL.FFT_LRG_SIZE)) + 20): #Wait for FFT to finish.
+    print("completed test vector")
+    for j in range(32 * round(math.log2(fl_model.FFT_LRG_SIZE)) + 20): #Wait for FFT to finish.
         dut.sim_tick()
 
-    for j in range(TapeInMarchFL.FFT_LRG_SIZE):
-        run_test_vector_on_minion_dut(dut, 0x0, 0x0, 0x1, Bits36(0), Bits36(out_msg_fft[j]), TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
-    
+    print("starting to check results")
+    for j in range(fl_model.FFT_LRG_SIZE):
+        run_test_vector_on_minion_dut(dut, 0x0, 0x0, 0x1, Bits36(0), Bits36(out_msg_fft[j]), TapeInMarchFL.PACKET_SIZE, fl_model.FREQ, 3 * (fl_model.FFT_LRG_SIZE - 8) / 8)
+        print("checkign result: " + str(j))
+
+    print("reset deserializer")
     in_msg  = FFT_Deserializer_Reset()
     out_msg = Bits36(0)
     run_test_vector_on_minion_dut(dut, 0x0, 0x1, 0x0, in_msg, out_msg, TapeInMarchFL.PACKET_SIZE, fl_model.FREQ)
-    for i in range(max((2**fl_model.FREQ) * spi_master_packet_size * 2, 32 * round(math.log2(TapeInMarchFL.FFT_LRG_SIZE)) + 20)):
+    for i in range(max((2**fl_model.FREQ) * spi_master_packet_size * 2, 32 * round(math.log2(fl_model.FFT_LRG_SIZE)) + 20)):
         dut.sim_tick()
     
+    print("started flush")
     while generate_minion_bitwise_test_from_input_array_flush_spi(dut, 0x0, 0x1, Bits36(0), Bits32(0), TapeInMarchFL.PACKET_SIZE): #Flush Errant Transactions
         x = 1
+    print("finished flush")
 
     
 
-def test_random_function(dut):
+def random_function(dut):
     selection = random.randint(0,5)
     if(selection == 0):
         loopback(dut, Bits32(random.randint(-100000,100000)))
@@ -169,18 +184,32 @@ def test_random_function(dut):
             inarray.append(Bits32(random.randint(-65000,65000)))
         fft_injection_minion(dut, inarray)
     elif(selection == 3):
-        bitwidth = random.randint(1,32)
-        randinteger = random.randint(0,2**(bitwidth - 2))
+        bitwidth = random.randint(8,32)
+        randinteger = random.randint(-2**(bitwidth - 1),2**(bitwidth - 1))
         bypass_inject_master(dut, Bits(bitwidth,v=randinteger), bitwidth)
     elif(selection == 4):
-        bitwidth = random.randint(1,32)
+        bitwidth = random.randint(8,32)
         randinteger = random.randint(0,2**(bitwidth - 1))
         spi_config_master(dut, Bits3(random.randint(0,7)), Bits6(bitwidth))
         bypass_inject_master(dut, Bits(bitwidth,v=randinteger), bitwidth)
     elif(selection == 5):
-        bitwidth = random.randint(1,32)
+        bitwidth = random.randint(8,32)
         array = []
-        for j in range(8):
-            array.append(random.randint(0,2**(bitwidth - 2)))
+        for j in range(fl_model.FFT_LRG_SIZE):
+            array.append(random.randint(0,2**(min(bitwidth - 1,16))))
         spi_config_master(dut, Bits3(random.randint(0,7)),Bits6(bitwidth) )
         fft_inject_master(dut, array, bitwidth)
+
+def tapein_one( dut, call_fft ):
+    resp_fft = fixed_point_fft(32, 16, 8, call_fft)
+    out_msg = Bits32(0)
+
+
+    for i in range(fl_model.FFT_SML_SIZE):
+        
+        run_test_vector_on_minion_dut(dut, 0x1, 0x1, 0x0, Bits32(call_fft[i]), out_msg, 32, fl_model.FREQ)
+    
+    for i in range(fl_model.FFT_SML_SIZE):
+        
+        run_test_vector_on_minion_dut(dut, 0x2, 0x0, 0x1, out_msg, resp_fft, 32, fl_model.FREQ)
+

@@ -29,7 +29,7 @@ class TapeInMarchFL:
 
     BIT_WIDTH    = 32
     DECIMAL_PT   = 16
-    FFT_LRG_SIZE = 8
+    
     FFT_SML_SIZE = 8
     MAXIMUM_ADDRESSIBLE_COMPONENTS = 16
     LOG2_MAXIMUM_ADDRESSIBLE_COMPONENTS = round(log2(MAXIMUM_ADDRESSIBLE_COMPONENTS))
@@ -46,6 +46,7 @@ class TapeInMarchFL:
         self.SPI_master_pkt_size_select = Bits32(0)
         self.SPI_master_Xbar_state      = Bits32(0)
         self.FREQ                       = 0
+        self.FFT_LRG_SIZE             = 8
 
         self.deserializer_buffer        = []
         
@@ -120,16 +121,18 @@ class TapeInMarchFL:
 
         BIT_WIDTH = TapeInMarchFL.BIT_WIDTH
         DECIMAL_PT = TapeInMarchFL.DECIMAL_PT
-        FFT_LRG_SIZE = TapeInMarchFL.FFT_LRG_SIZE
+        FFT_LRG_SIZE = self.FFT_LRG_SIZE
 
         ret = [None]
         self.deserializer_buffer.append(msg)
         if len(self.deserializer_buffer) == FFT_LRG_SIZE:
 
             ret = fixed_point_fft(BIT_WIDTH, DECIMAL_PT, FFT_LRG_SIZE, self.deserializer_buffer)
+            print(ret)
             for i in range(len(ret)):
-
+                
                 ret[i] = concat(Bits4(1),Bits32(int(ret[i])))
+                
             self.deserializer_buffer = []
         return ret
 
