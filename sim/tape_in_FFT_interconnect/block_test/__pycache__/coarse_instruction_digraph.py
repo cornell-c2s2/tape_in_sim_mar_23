@@ -39,8 +39,7 @@ def fft_injection_minion(dut, array):
         dut.sim_tick()
     for j in range(fl_model.FFT_LRG_SIZE):
         ret_val = spi_read_transaction(dut)
-        delta = 3
-        assert abs((out_msg[j] - ret_val[0]).int()) < delta, "ERROR: recieved-expected delta too large. Expected: " + str(out_msg[j]) + " Recieved: " + str(ret_val[0])+ " Delta: " + str(delta)
+        assert [out_msg[j]] == ret_val, "ERROR: expected value incorrect. Expected: " + str(out_msg[j]) + " Recieved: " + str(ret_val)
 
 
 
@@ -166,12 +165,8 @@ def fft_inject_master(dut, spi_master_message : int, spi_master_packet_size : in
 
     print("starting to check results")
     for j in range(fl_model.FFT_LRG_SIZE):
-        ret_val = spi_read_transaction(dut)
-        delta = 3
-
-        difference = (out_msg_fft[j] - ret_val[0]).int()
-        assert abs(difference) < delta, "ERROR: recieved-expected delta too large. Expected: " + str(out_msg[j]) + " Recieved: " + str(ret_val[0])+ " Delta: " + str(delta)
-        print("checking result: " + str(j))
+        run_test_vector_on_minion_dut(dut, 0x0, 0x0, 0x1, Bits36(0), Bits36(out_msg_fft[j]), TapeInMarchFL.PACKET_SIZE, fl_model.FREQ, 3 * (fl_model.FFT_LRG_SIZE - 8) / 8)
+        print("checkign result: " + str(j))
 
     print("reset deserializer")
     in_msg  = FFT_Deserializer_Reset()

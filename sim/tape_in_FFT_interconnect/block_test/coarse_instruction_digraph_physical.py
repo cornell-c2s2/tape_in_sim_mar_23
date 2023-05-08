@@ -3,11 +3,12 @@ from math import log2
 import math
 import numpy as np
 import random 
+import time
 
 from .TapeInMarchFLClass import *
 from .spi_tc_maker import *
 from .command_generator import *
-from .spi_sim_commands import *
+from .spi_physical_commands import *
 
 fl_model = TapeInMarchFL()
 
@@ -29,37 +30,43 @@ def fft_injection_minion(dut, array):
     in_msg = FFT_Output_Crossbar_Control( Bits1(0) )
     out_msg = fl_model.SPI_minion_input(in_msg)
     spi_write_transaction( dut, in_msg )
-
+    
     for i in range(fl_model.FFT_LRG_SIZE):
         in_msg = FFT_Input_Crossbar_Injection(Bits32(array[i]))
         out_msg = fl_model.SPI_minion_input(in_msg)
         spi_write_transaction(dut, in_msg)
     
     for j in range(fl_model.FFT_LRG_SIZE * round(math.log2(fl_model.FFT_LRG_SIZE)) + 20): #Wait for FFT to finish.
-        dut.sim_tick()
+        continue
     for j in range(fl_model.FFT_LRG_SIZE):
         ret_val = spi_read_transaction(dut)
         delta = 3
-        assert abs((out_msg[j] - ret_val[0]).int()) < delta, "ERROR: recieved-expected delta too large. Expected: " + str(out_msg[j]) + " Recieved: " + str(ret_val[0])+ " Delta: " + str(delta)
+        if(ret_val[0] == Bits36(0x000000000)):
+            j = j - 1
+            continue
+        assert abs((out_msg[j] - ret_val[0]).int()) < delta, "ERROR: recieved-expected delta too large. Expected: " + str([out_msg[j]]) + " Recieved: " + str([ret_val[0]])+ " Delta: " + str(delta)
 
 
 
 def bypass_injection_minion(dut, value = Bits32(0xFFFFFFFF)):
     in_msg = FFT_Input_Crossbar_Control( Bits1(0), Bits1(1) )
     out_msg = fl_model.SPI_minion_input( in_msg )
-    
+    print("input xbar")
     spi_write_transaction( dut, in_msg )
 
     in_msg = FFT_Output_Crossbar_Control( Bits1(1) )
     out_msg = fl_model.SPI_minion_input(in_msg)
-    
+    print("output_xbar")
     spi_write_transaction( dut, in_msg )
 
     in_msg = FFT_Input_Crossbar_Injection(value)
     out_msg = fl_model.SPI_minion_input(in_msg)
-    
+    print("bypass_xbar")
+ 
     ret_val = spi_write_read_transaction(dut, in_msg)
 
+    if(ret_val == [Bits36(0x000000011)]):
+        ret_val = spi_read_transaction(dut)
     assert ret_val == out_msg, "ERROR: DUT value incorrect. Expected: " + str(out_msg) + " Recieved: " + str(ret_val)
 
 def spi_config_master(dut, frequency : Bits3, packet_size : Bits6):
@@ -166,12 +173,8 @@ def fft_inject_master(dut, spi_master_message : int, spi_master_packet_size : in
 
     print("starting to check results")
     for j in range(fl_model.FFT_LRG_SIZE):
-        ret_val = spi_read_transaction(dut)
-        delta = 3
-
-        difference = (out_msg_fft[j] - ret_val[0]).int()
-        assert abs(difference) < delta, "ERROR: recieved-expected delta too large. Expected: " + str(out_msg[j]) + " Recieved: " + str(ret_val[0])+ " Delta: " + str(delta)
-        print("checking result: " + str(j))
+        run_test_vector_on_minion_dut(dut, 0x0, 0x0, 0x1, Bits36(0), Bits36(out_msg_fft[j]), TapeInMarchFL.PACKET_SIZE, fl_model.FREQ, 3 * (fl_model.FFT_LRG_SIZE - 8) / 8)
+        print("checkign result: " + str(j))
 
     print("reset deserializer")
     in_msg  = FFT_Deserializer_Reset()

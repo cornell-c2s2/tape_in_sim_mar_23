@@ -111,6 +111,8 @@ def generate_minion_bitwise_test_from_input_array(val_write, val_read, src_msg, 
 
   #Sending the val_write and val_read bits over
 
+  
+
   bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' ) # pull_en = 1
   bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )
   bitwise_input_array_helper(output_arr, 0, 0,   0,            '?' )

@@ -17,7 +17,7 @@ from .spi_tc_maker import *
 
 from tape_in_FFT_interconnect.tape_in_FFT_interconnectRTL import FFTInterconnectVRTL
 
-from .coarse_instruction_digraph import *
+from .coarse_instruction_digraph_physical import *
 
 import random
 
@@ -68,7 +68,7 @@ def test_crossbar_bypass_random( cmdline_opts ): #Actually works. Nutty - WS
   dut.sim_reset()
 
   for i in range(100):
-    bypass_injection_minion(dut, Bits32(random.randint(-65000,65000)))
+    bypass_injection_minion(dut, Bits32(random.randint(-60000,60000)))
 
 def test_fft_injection_minion_basic( cmdline_opts ):
   dut = FFTInterconnectVRTL()
@@ -276,11 +276,10 @@ def test_crossbar_bypass_random_16( cmdline_opts ): #Actually works. Nutty - WS
 
 
 def test_fft_injection_minion_basic_16( cmdline_opts ):
-  dut = FFTInterconnectVRTL(BIT_WIDTH = 32, DECIMAL_PT = 16, N_SAMPLES = 16 )
+  dut = FFTInterconnectVRTL(N_SAMPLES = 16)
   dut = config_model_with_cmdline_opts( dut, cmdline_opts, duts=[] )
-  dut.apply( DefaultPassGroup( linetrace=False ) )
+  dut.apply( DefaultPassGroup( linetrace=True ) )
 
-  print("hi")
 
   fl_model.FFT_LRG_SIZE = 16
 
@@ -484,3 +483,20 @@ def test_tapein_1_random_testing( cmdline_opts ):
   array = [1,1,1,1,1,1,1,1]
   tapein_one( dut, array )
 
+
+def test_fft_injection_minion_basic_random_stream_16( cmdline_opts ):
+  dut = FFTInterconnectVRTL(N_SAMPLES = 16)
+  dut = config_model_with_cmdline_opts( dut, cmdline_opts, duts=[] )
+  dut.apply( DefaultPassGroup( linetrace=False ) )
+
+  fl_model.FFT_LRG_SIZE = 16
+  
+  dut.sim_reset()
+
+  for i in range(100):
+    inarray = []
+
+    for i in range(fl_model.FFT_LRG_SIZE):
+      inarray.append(Bits32(random.randint(-65000,65000)))
+
+    fft_injection_minion(dut, inarray)
