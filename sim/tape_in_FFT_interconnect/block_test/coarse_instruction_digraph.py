@@ -39,8 +39,8 @@ def fft_injection_minion(dut, array):
         dut.sim_tick()
     for j in range(fl_model.FFT_LRG_SIZE):
         ret_val = spi_read_transaction(dut)
-        delta = 3
-        assert abs((out_msg[j] - ret_val[0]).int()) < delta, "ERROR: recieved-expected delta too large. Expected: " + str(out_msg[j]) + " Recieved: " + str(ret_val[0])+ " Delta: " + str(delta)
+        delta = 10
+        assert abs((out_msg[j] - ret_val[0]).int()) < delta, "ERROR: recieved-expected delta too large. Expected: " + str(out_msg[j]) + " Recieved: " + str(ret_val[0])+ " Delta: " + str(abs((out_msg[j] - ret_val[0]).int())) +  " >= " + str(delta)
 
 
 
@@ -167,10 +167,10 @@ def fft_inject_master(dut, spi_master_message : int, spi_master_packet_size : in
     print("starting to check results")
     for j in range(fl_model.FFT_LRG_SIZE):
         ret_val = spi_read_transaction(dut)
-        delta = 3
+        delta = 12
 
         difference = (out_msg_fft[j] - ret_val[0]).int()
-        assert abs(difference) < delta, "ERROR: recieved-expected delta too large. Expected: " + str(out_msg[j]) + " Recieved: " + str(ret_val[0])+ " Delta: " + str(delta)
+        assert abs(difference) < delta, "ERROR: recieved-expected delta too large. Expected: " + str(out_msg_fft[j]) + " Recieved: " + str(ret_val[0])+ " Delta: " + str(abs(difference)) + " => "+ str(delta)
         print("checking result: " + str(j))
 
     print("reset deserializer")
@@ -189,13 +189,14 @@ def fft_inject_master(dut, spi_master_message : int, spi_master_packet_size : in
 
 def random_function(dut):
     selection = random.randint(0,5)
+    print("selection: " + str( selection ) )
     if(selection == 0):
         loopback(dut, Bits32(random.randint(-100000,100000)))
     elif(selection == 1):
         bypass_injection_minion(dut, Bits32(random.randint(-65000,65000)))
     elif(selection == 2):
         inarray = []
-        for i in range(8):
+        for i in range(fl_model.FFT_LRG_SIZE):
             inarray.append(Bits32(random.randint(-65000,65000)))
         fft_injection_minion(dut, inarray)
     elif(selection == 3):

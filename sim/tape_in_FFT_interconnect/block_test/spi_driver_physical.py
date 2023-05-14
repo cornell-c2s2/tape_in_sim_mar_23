@@ -1,7 +1,7 @@
 from pymtl3 import *
 from spidriver import SPIDriver
 
-s = SPIDriver("/dev/ttyUSB1")
+s = SPIDriver("/dev/ttyUSB0")
 
 def spi_write_physical(dut, src_msg):
     src_msg_bytes = []
