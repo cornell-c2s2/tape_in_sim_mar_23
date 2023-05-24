@@ -27,25 +27,11 @@ def master_serve(dut, src_msg : Bits) -> Bits:
 
 
 
-    tr( dut, 1, 0, 0 )
-    tr( dut, 1, 0, 0 )
-    tr( dut, 1, 0, 0 )
-    tr( dut, 1, 0, 0 )
-    tr( dut, 1, 0, 0 )
+    while ( tm( dut, 0)[0] == Bits1(1) ):
+        pass
 
     for i in range(packet_size):
-        tr(                                dut, 0, 0,   0                            )
-        tr(                                dut, 0, 0,   0                            )
-        tr(                                dut, 0, 0,   0                            )
-        tr(                                dut, 0, 0,   src_msg[packet_size - i - 1] )
-        tr(                                dut, 0, 0,   src_msg[packet_size - i - 1] )
-        tr(                                dut, 0, 1,   src_msg[packet_size - i - 1] )
-        tr(                                dut, 0, 1,   src_msg[packet_size - i - 1] )
-        tr(                                dut, 0, 1,   src_msg[packet_size - i - 1] )
-        tr(                                dut, 0, 1,   src_msg[packet_size - i - 1] )
-        tr(                                dut, 0, 1,   src_msg[packet_size - i - 1] )
-        tr(                                dut, 0, 1,   0                            )
-        snk_msg[packet_size - i - 1] = tr( dut, 0, 0,   0                            )
+       if 
 
       #pull CS high to end transaction
     tr( dut, 1, 0, 0 )

@@ -1,13 +1,13 @@
 `ifndef TAPE_IN_FFT_INTERCONNECT_VRTL
 `define TAPE_IN_FFT_INTERCONNECT_VRTL
 
-`include "../../../C2S2-Module-Library/sim/spi/SPIMasterValRdyVRTL.v"
-`include "../../../spi_minion/sim/SPI_minion/components/SPIMinionAdapterConnectedVRTL.v"
-`include "../../../tape_in_sim/sim/minion_FFT/FFTSPIMinionVRTL.v"
-`include "../../../C2S2-PacketRoutingInterconnect/sim/BlockingXBar/crossbarVRTL.v"
-`include "../../../C2S2-PacketRoutingInterconnect/sim/BlockingXBar/crossbaroneoutVRTL.v"
-`include "../../../C2S2-PacketRoutingInterconnect/sim/Router/routerVRTL.v"
-`include "../../../C2S2-PacketRoutingInterconnect/sim/Arbiter/ArbitratorVRTL.v"
+`include "../spi/SPIMasterValRdyVRTL.v"
+`include "../SPI_minion/components/SPIMinionAdapterConnectedVRTL.v"
+`include "../minion_FFT/FFTSPIMinionVRTL.v"
+`include "../BlockingXBar/crossbarVRTL.v"
+`include "../BlockingXBar/crossbaroneoutVRTL.v"
+`include "../Router/routerVRTL.v"
+`include "../Arbiter/ArbitratorVRTL.v"
 
 module tape_in_FFT_interconnectVRTL
 #(
@@ -223,6 +223,7 @@ assign spi_master_xbar_recv_msg[1] = 0;
 assign spi_master_xbar_recv_val[1] = 1;
 
 assign master_cs = master_cs_temp[0];
+
 
 SPIMasterValRdyVRTL #(.nbits(32), .ncs(2)) spi_master (
   .clk(clk), 

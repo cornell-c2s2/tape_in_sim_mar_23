@@ -1,0 +1,71 @@
+//SINE WAVE OF BIT_WIDTH = 32, DECIMAL_PT =  16
+//FOR FFT OF SIZE = 64
+module SineWave__BIT_WIDTH_32__DECIMAL_POINT_16__SIZE_FFT_64VRTL
+   (
+       output logic [32 - 1:0] sine_wave_out [0:64 - 1]
+   );
+   assign sine_wave_out[0] = 0;
+   assign sine_wave_out[1] = 6423;
+   assign sine_wave_out[2] = 12785;
+   assign sine_wave_out[3] = 19024;
+   assign sine_wave_out[4] = 25079;
+   assign sine_wave_out[5] = 30893;
+   assign sine_wave_out[6] = 36409;
+   assign sine_wave_out[7] = 41575;
+   assign sine_wave_out[8] = 46340;
+   assign sine_wave_out[9] = 50660;
+   assign sine_wave_out[10] = 54491;
+   assign sine_wave_out[11] = 57797;
+   assign sine_wave_out[12] = 60547;
+   assign sine_wave_out[13] = 62714;
+   assign sine_wave_out[14] = 64276;
+   assign sine_wave_out[15] = 65220;
+   assign sine_wave_out[16] = 65536;
+   assign sine_wave_out[17] = 65220;
+   assign sine_wave_out[18] = 64276;
+   assign sine_wave_out[19] = 62714;
+   assign sine_wave_out[20] = 60547;
+   assign sine_wave_out[21] = 57797;
+   assign sine_wave_out[22] = 54491;
+   assign sine_wave_out[23] = 50660;
+   assign sine_wave_out[24] = 46340;
+   assign sine_wave_out[25] = 41575;
+   assign sine_wave_out[26] = 36409;
+   assign sine_wave_out[27] = 30893;
+   assign sine_wave_out[28] = 25079;
+   assign sine_wave_out[29] = 19024;
+   assign sine_wave_out[30] = 12785;
+   assign sine_wave_out[31] = 6423;
+   assign sine_wave_out[32] = 0;
+   assign sine_wave_out[33] = -6423;
+   assign sine_wave_out[34] = -12785;
+   assign sine_wave_out[35] = -19024;
+   assign sine_wave_out[36] = -25079;
+   assign sine_wave_out[37] = -30893;
+   assign sine_wave_out[38] = -36409;
+   assign sine_wave_out[39] = -41575;
+   assign sine_wave_out[40] = -46340;
+   assign sine_wave_out[41] = -50660;
+   assign sine_wave_out[42] = -54491;
+   assign sine_wave_out[43] = -57797;
+   assign sine_wave_out[44] = -60547;
+   assign sine_wave_out[45] = -62714;
+   assign sine_wave_out[46] = -64276;
+   assign sine_wave_out[47] = -65220;
+   assign sine_wave_out[48] = -65536;
+   assign sine_wave_out[49] = -65220;
+   assign sine_wave_out[50] = -64276;
+   assign sine_wave_out[51] = -62714;
+   assign sine_wave_out[52] = -60547;
+   assign sine_wave_out[53] = -57797;
+   assign sine_wave_out[54] = -54491;
+   assign sine_wave_out[55] = -50660;
+   assign sine_wave_out[56] = -46340;
+   assign sine_wave_out[57] = -41575;
+   assign sine_wave_out[58] = -36409;
+   assign sine_wave_out[59] = -30893;
+   assign sine_wave_out[60] = -25079;
+   assign sine_wave_out[61] = -19024;
+   assign sine_wave_out[62] = -12785;
+   assign sine_wave_out[63] = -6423;
+endmodule
