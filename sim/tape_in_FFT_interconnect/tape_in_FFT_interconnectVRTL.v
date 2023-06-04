@@ -106,12 +106,25 @@ logic [BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2 - 1 : 0 ] arb_imm;
 
 logic deserializer_reset;
 
+generate
+    genvar i;
+    for(i = 10; i < MAX_ADDRESSABLE_SRCS_POW_2; i++) begin
+        assign module_interconnect_src_rdy[i] = 0;
+        assign module_interconnect_snk_val[i] = 0;
+
+        assign module_interconnect_snk_msg[i] = 0;
+    end
+endgenerate
+
+logic [BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2 - 1 : 0] spi_minion_send_msg_fourstate;
+assign spi_minion_send_msg = spi_minion_send_msg_fourstate & spi_minion_send_val;
+
 
 
 SPIMinionAdapterConnectedVRTL #(.BIT_WIDTH(BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2), .N_SAMPLES(N_SAMPLES) ) ctrl_spi_minion 
                 (.clk(clk), .reset(reset), .cs(minion_cs), .sclk(minion_sclk), .mosi(minion_mosi), .miso(minion_miso),
                  .recv_msg(spi_minion_recv_msg), .recv_rdy(spi_minion_recv_rdy), .recv_val(spi_minion_recv_val), 
-                 .send_msg(spi_minion_send_msg), .send_rdy(spi_minion_send_rdy), .send_val(spi_minion_send_val),
+                 .send_msg(spi_minion_send_msg_fourstate), .send_rdy(spi_minion_send_rdy), .send_val(spi_minion_send_val),
                  .minion_parity(minion_parity), .adapter_parity(adapter_parity));
 
 ArbitratorVRTL #(.nbits(BIT_WIDTH), 
@@ -224,6 +237,9 @@ assign spi_master_xbar_recv_val[1] = 1;
 
 assign master_cs = master_cs_temp[0];
 
+logic [BIT_WIDTH - 1:0] spi_master_send_msg_fourstate;
+
+assign spi_master_send_msg = spi_master_send_msg_fourstate & spi_master_send_val;
 
 SPIMasterValRdyVRTL #(.nbits(32), .ncs(2)) spi_master (
   .clk(clk), 
@@ -240,7 +256,7 @@ SPIMasterValRdyVRTL #(.nbits(32), .ncs(2)) spi_master (
 
   .send_val(spi_master_send_val),
   .send_rdy(spi_master_send_rdy),
-  .send_msg(spi_master_send_msg),
+  .send_msg(spi_master_send_msg_fourstate),
 
   .packet_size_ifc_val(module_interconnect_src_val[5]), //Address 5: SPI Master Packet Size Select
   .packet_size_ifc_rdy(module_interconnect_src_rdy[5]),
