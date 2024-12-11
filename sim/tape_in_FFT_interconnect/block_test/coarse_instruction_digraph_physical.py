@@ -14,12 +14,12 @@ fl_model = TapeInMarchFL()
 
 
 
-def loopback(dut, value = Bits32(0xAAAAAAAA)):
+def loopback(dut, value = Bits32(0xAAAAAAAA), iteration = 0):
     in_msg = FFT_Loopback(value)
     out_msg = fl_model.SPI_minion_input(in_msg)
     ret_msg = spi_write_read_transaction( dut, in_msg )
 
-    assert out_msg == ret_msg, "ERROR: expected value incorrect. Expected: " + str(out_msg) + " Recieved: " + str(ret_msg)
+    assert out_msg == ret_msg, "ERROR: expected value incorrect at "+str(iteration) +". Expected: " + str(out_msg) + " Recieved: " + str(ret_msg)
 
 def fft_injection_minion(dut, array):
 
@@ -44,6 +44,8 @@ def fft_injection_minion(dut, array):
         if(ret_val[0] == Bits36(0x000000000)):
             j = j - 1
             continue
+
+        print("THIS IS RETURN ",ret_val[0])
         assert abs((out_msg[j] - ret_val[0]).int()) < delta, "ERROR: recieved-expected delta too large. Expected: " + str([out_msg[j]]) + " Recieved: " + str([ret_val[0]])+ " Delta: " + str(delta)
 
 

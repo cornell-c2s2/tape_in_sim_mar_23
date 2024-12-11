@@ -117,7 +117,7 @@ generate
 endgenerate
 
 logic [BIT_WIDTH + MAX_ADDRESSABLE_SRC_LOG2 - 1 : 0] spi_minion_send_msg_fourstate;
-assign spi_minion_send_msg = spi_minion_send_msg_fourstate & spi_minion_send_val;
+assign spi_minion_send_msg = spi_minion_send_msg_fourstate & {35{spi_minion_send_val}};
 
 
 
@@ -239,7 +239,7 @@ assign master_cs = master_cs_temp[0];
 
 logic [BIT_WIDTH - 1:0] spi_master_send_msg_fourstate;
 
-assign spi_master_send_msg = spi_master_send_msg_fourstate & spi_master_send_val;
+assign spi_master_send_msg = spi_master_send_msg_fourstate & {35{spi_master_send_val}};
 
 SPIMasterValRdyVRTL #(.nbits(32), .ncs(2)) spi_master (
   .clk(clk), 

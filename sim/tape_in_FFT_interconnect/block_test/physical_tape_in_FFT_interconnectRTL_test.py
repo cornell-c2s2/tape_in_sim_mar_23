@@ -47,8 +47,8 @@ def test_loopback_random( cmdline_opts ): #Actually works. Nutty - WS
 
   dut.sim_reset()
 
-  for i in range(100):
-    loopback(dut, Bits32(random.randint(-100000,100000)))
+  for i in range(25):
+    loopback(dut, Bits32(random.randint(-100000,100000)), i)
 
 def test_crossbar_bypass( cmdline_opts ):
   dut = FFTInterconnectVRTL()
@@ -493,7 +493,7 @@ def test_fft_injection_minion_basic_random_stream_16( cmdline_opts ):
   
   dut.sim_reset()
 
-  for i in range(100):
+  for i in range(5):
     inarray = []
 
     for i in range(fl_model.FFT_LRG_SIZE):

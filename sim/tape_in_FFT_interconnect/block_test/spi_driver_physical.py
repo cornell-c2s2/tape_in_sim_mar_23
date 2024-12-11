@@ -1,5 +1,5 @@
 from pymtl3 import *
-from spidriver import SPIDriver
+from .spidriver import SPIDriver
 
 s = SPIDriver("/dev/ttyUSB0")
 
